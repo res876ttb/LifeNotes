@@ -1,0 +1,24 @@
+.inline-block {
+  display: inline-block;
+}
+
+#cursor-out {
+  width: 0px;
+  display: inline-block;
+}
+
+@keyframes blink {
+  from {visibility: visible;}
+  50%  {visibility: hidden;}
+  to   {visibility: hidden;}
+}
+
+#cursor {
+  position: relative;
+  top: 0.4rem;
+  width: 1px;
+  height: 1.5rem;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: inline-block;
+  animation: blink linear 1s infinite;
+}

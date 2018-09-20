@@ -1,0 +1,7 @@
+#Editor-frame {
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  outline: 2px brown solid;
+}

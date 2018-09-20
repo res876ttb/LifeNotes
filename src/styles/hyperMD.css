@@ -1,0 +1,115 @@
+/* reset the style of hidden token. */
+.hmd-hidden-token {
+  color: rgb(119, 119, 119) !important;
+  letter-spacing: 0 !important;
+}
+.CodeMirror span.hmd-hidden-token.cm-formatting-strong, .CodeMirror span.hmd-hidden-token.cm-formatting-em {
+  font-size: 1rem !important;
+}
+/* special setting for code block quotation marker */
+.CodeMirror span.hmd-hidden-token.cm-formatting-code {
+  font-size: 90% !important;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace !important;
+}
+/* special setting for link wrapper marker */
+.CodeMirror span.hmd-hidden-token.cm-formatting-link {
+  font-size: 1rem !important;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace !important;
+}
+
+/* reset inline code block style */
+.cm-s-hypermd-light span.cm-inline-code:not(.cm-formatting):not(.cm-hmd-indented-code) {
+  color: rgb(232, 108, 32);
+  border: none !important;
+  border-radius: 1px !important;
+  background-color: rgb(238, 238, 238) !important;
+}
+
+/* reset code block style */
+.HyperMD-codeblock-bg.HyperMD-codeblock-begin-bg.CodeMirror-linebackground {
+  border-top-left-radius: 1px !important;
+  border-top-right-radius: 1px !important;
+  border: none !important;
+}
+.HyperMD-codeblock-bg.HyperMD-codeblock-end-bg.CodeMirror-linebackground {
+  border-bottom-left-radius: 1px !important;
+  border-bottom-right-radius: 1px !important;
+  border: none !important;
+}
+.cm-s-hypermd-light div.HyperMD-codeblock-bg {
+  border: none !important;
+}
+
+/* reset quote style */
+.HyperMD-quote {
+  background-color: rgba(70, 185, 132, 0.10) !important;
+}
+.cm-s-hypermd-light pre.HyperMD-quote:before {
+  left: 5px !important;
+  background: rgb(70, 185, 132) !important;
+}
+.cm-s-hypermd-light pre.HyperMD-quote-1:before {
+  width: 4px !important;
+}
+.cm-s-hypermd-light pre.HyperMD-quote-1 {
+  padding-left: 24px !important;
+}
+.cm-s-hypermd-light pre.HyperMD-quote-1 span.cm-formatting-quote:first-child {
+  margin-left: -17px !important;
+}
+.cm-s-hypermd-light pre.HyperMD-quote-1 span.cm-formatting-quote {
+  width: 17px !important;
+}
+.HyperMD-quote.HyperMD-quote-1.CodeMirror-line:before {background: repeating-linear-gradient(90deg,rgb(70, 185, 132),rgb(70, 185, 132) 4px,rgba(0,0,0,0) 4px,rgba(0,0,0,0) 20px) !important;}
+.HyperMD-quote.HyperMD-quote-2.CodeMirror-line:before {background: repeating-linear-gradient(90deg,rgb(70, 185, 132),rgb(70, 185, 132) 4px,rgba(0,0,0,0) 4px,rgba(0,0,0,0) 20px) !important;}
+.HyperMD-quote.HyperMD-quote-3.CodeMirror-line:before {background: repeating-linear-gradient(90deg,rgb(70, 185, 132),rgb(70, 185, 132) 4px,rgba(0,0,0,0) 4px,rgba(0,0,0,0) 20px) !important;}
+.HyperMD-quote.HyperMD-quote-4.CodeMirror-line:before {background: repeating-linear-gradient(90deg,rgb(70, 185, 132),rgb(70, 185, 132) 4px,rgba(0,0,0,0) 4px,rgba(0,0,0,0) 20px) !important;}
+.HyperMD-quote.HyperMD-quote-5.CodeMirror-line:before {background: repeating-linear-gradient(90deg,rgb(70, 185, 132),rgb(70, 185, 132) 4px,rgba(0,0,0,0) 4px,rgba(0,0,0,0) 20px) !important;}
+.HyperMD-quote.HyperMD-quote-6.CodeMirror-line:before {background: repeating-linear-gradient(90deg,rgb(70, 185, 132),rgb(70, 185, 132) 4px,rgba(0,0,0,0) 4px,rgba(0,0,0,0) 20px) !important;}
+.HyperMD-quote.HyperMD-quote-7.CodeMirror-line:before {background: repeating-linear-gradient(90deg,rgb(70, 185, 132),rgb(70, 185, 132) 4px,rgba(0,0,0,0) 4px,rgba(0,0,0,0) 20px) !important;}
+.HyperMD-quote.HyperMD-quote-8.CodeMirror-line:before {background: repeating-linear-gradient(90deg,rgb(70, 185, 132),rgb(70, 185, 132) 4px,rgba(0,0,0,0) 4px,rgba(0,0,0,0) 20px) !important;}
+.HyperMD-quote.HyperMD-quote-9.CodeMirror-line:before {background: repeating-linear-gradient(90deg,rgb(70, 185, 132),rgb(70, 185, 132) 4px,rgba(0,0,0,0) 4px,rgba(0,0,0,0) 20px) !important;}
+
+/* set font of line number */
+.CodeMirror-linenumber {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+/* Set space on top of list marker */
+.cm-s-hypermd-light pre.HyperMD-list-line span.cm-formatting-list, .cm-s-hypermd-light pre.HyperMD-list-line span.cm-hmd-list-indent {
+  padding-top: 2.4px;
+}
+
+/* Set space before list */
+.cm-s-hypermd-light pre.HyperMD-list-line-1 {
+  padding-left: 25px !important;
+}
+.cm-s-hypermd-light pre.HyperMD-list-line-2 {
+  padding-left: 55px !important;
+}
+.cm-s-hypermd-light pre.HyperMD-list-line-3 {
+  padding-left: 85px !important;
+}
+.cm-s-hypermd-light pre.HyperMD-list-line-4 {
+  padding-left: 115px !important;
+}
+.cm-s-hypermd-light pre.HyperMD-list-line-5 {
+  padding-left: 145px !important;
+}
+.cm-s-hypermd-light pre.HyperMD-list-line-6 {
+  padding-left: 175px !important;
+}
+.cm-s-hypermd-light pre.HyperMD-list-line-7 {
+  padding-left: 205px !important;
+}
+.cm-s-hypermd-light pre.HyperMD-list-line-8 {
+  padding-left: 235px !important;
+}
+.cm-s-hypermd-light pre.HyperMD-list-line-9 {
+  padding-left: 265px !important;
+}
+
+/* set html rendered result style */
+.CodeMirror-linewidget {
+  padding: 0px 5px !important;
+}

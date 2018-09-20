@@ -1,0 +1,8 @@
+#EditorTabBar-frame {
+  position: absolute;
+  top: 40px;
+  left: 0px;
+  right: 0px;
+  height: 40px;
+  outline: 2px solid yellowgreen;
+}

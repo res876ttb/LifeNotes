@@ -1,0 +1,14 @@
+#SB-frame {
+  height: 100%;
+  overflow: scroll;
+  outline: 2px blueviolet solid;
+  position: fixed;
+}
+
+#SB-resizer {
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  width: 4px;
+  cursor: col-resize;
+}
