@@ -70,8 +70,6 @@ class EditorCore extends React.Component {
       tabSize: 2,
     });
     editor.setSize(null, "100%");
-    // editor.setOption('hmdFold', {image: true, link: true, math: true, html: true, emoji: true});
-    // editor.setOption('hmdFoldCode', {flowchart: true, mermaid: true});
     editor.setValue(
 "# HyperMD Documentation\n\
 \n\

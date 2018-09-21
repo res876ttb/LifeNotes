@@ -1,0 +1,6 @@
+.ETBB-frame {
+  display: inline-block;
+  padding: 2px 1px;
+  /* transform: rotate(90deg);
+  transform-origin: right top; */
+}
