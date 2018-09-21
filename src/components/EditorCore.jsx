@@ -61,27 +61,23 @@ class EditorCore extends React.Component {
         math:  true,
         html:  true, // maybe dangerous
         emoji: true,
+        code:  true,
+      },
+      hmdFoldCode: {
+        flowchart: true,
+        mermaid: true,
       },
       tabSize: 2,
     });
     editor.setSize(null, "100%");
+    // editor.setOption('hmdFold', {image: true, link: true, math: true, html: true, emoji: true});
+    // editor.setOption('hmdFoldCode', {flowchart: true, mermaid: true});
     editor.setValue(
 "# HyperMD Documentation\n\
 \n\
 ![HyperMD Logo](http://laobubu.net/HyperMD/demo/logo.png)\n\
 \n\
 [中文文檔](./zh-CN/index.md)\n\
-\n\
-```cpp\n\
-#include <iostream>\n\
-using namespace std;\n\
-\n\
-int main() {\n\
-  printf(\"Hello world!\\n\");\n\
-  return 0;\n\
-}\n\
-```\n\
-This is a normal line\n\
 >**Notice**\n\
 >\n\
 >All links are DIRECTLY clickable. Feel free to click without `Ctrl` or `Alt`!\n\
@@ -96,9 +92,54 @@ This is a normal line\n\
 >or\n\
 >[GitHub gh-pages branch](https://github.com/laobubu/HyperMD/blob/gh-pages/docs/index.md)\n\
 \n\
-* 123\n\
-* 456\n\
-321\n\
+## table\n\
+| header1 | header 2 | header 3 | header 4 |\n\
+| ------- | :------- | -------: | :------: |\n\
+| 123 | 123 | 123 | 123 |\n\
+\n\
+## codeblock ##\n\
+```cpp\n\
+#include <iostream>\n\
+using namespace std;\n\
+\n\
+int main() {\n\
+  printf(\"Hello world!\\n\");\n\
+  return 0;\n\
+}\n\
+```\n\
+\n\
+## flowchart ##\n\
+```flow\n\
+st=>start: Start:>http://www.google.com[blank]\n\
+e=>end:>http://www.google.com\n\
+op1=>operation: My Operation\n\
+sub1=>subroutine: My Subroutine\n\
+cond=>condition: Yes\n\
+or No?:>http://www.google.com\n\
+io=>inputoutput: catch something...\n\
+para=>parallel: parallel tasks\n\
+\n\
+st->op1->cond\n\
+cond(yes)->io->e\n\
+cond(no)->para\n\
+para(path1, bottom)->sub1(right)->op1\n\
+para(path2, top)->op1\n\
+```\n\
+\n\
+## mermaid ##\n\
+```mermaid\n\
+graph TD;\n\
+    A-->B;\n\
+    A-->C;\n\
+    B-->D;\n\
+    C-->D;\n\
+```\n\
+\n\
+## html ##\n\
+<div>html</div>\n\
+\n\
+end\n\
+\n\
 "
     )
     
