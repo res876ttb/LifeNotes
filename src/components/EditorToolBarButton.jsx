@@ -65,6 +65,7 @@ class EditorToolBarButton extends React.Component {
       <div className='ETBB-frame'>
         <Button className={this.props.classes.button}
           style={this.props.style}
+          onMouseDown={this.handleClick}
         >
           {this.props.icon}
         </Button>
@@ -72,8 +73,12 @@ class EditorToolBarButton extends React.Component {
     );
   }
 
-  handleClick() {
-    this.props.click();
+  handleClick(e) {
+    if (this.props.click) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.props.click();
+    }
   }
 }
 

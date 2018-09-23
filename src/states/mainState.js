@@ -11,13 +11,19 @@
 // constants
 const initMainState = {
   sideBarWidth: 200,
-  showToolBar: true,
+  showToolBar: false,
   showTabBar: true,
+  activeEditorId: null,
+  editorArr: {},
+  activeOrder: [],
 }
 
 // ============================================
 // reducer
 export function main(state=initMainState, action) {
+  let tmp = null;
+  let tmp1 = null;
+  let tmp2 = null;
   switch(action.type) {
     case 'main setSideBarWidth':
       return {
@@ -33,7 +39,47 @@ export function main(state=initMainState, action) {
       return {
         ...state,
         showTabBar: !state.showTabBar
+      };
+    case 'main setActiveEditor': 
+      tmp = state.activeOrder.slice();
+      if (tmp.indexOf(action.id) === -1) {
+        tmp.unshift(action.id);
+      } else {
+        tmp2 = tmp.indexOf(action.id);
+        tmp.splice(tmp2, 1);
+        tmp.unshift(action.id);
       }
+
+      return {
+        ...state,
+        activeEditorId: action.id,
+        activeOrder: tmp,
+      };
+    case 'main addEditor':
+      if (Object.keys(state.editorArr).length === 0) {
+        tmp = {};
+        tmp[action.id] = action.editor;
+      } else {
+        tmp = Object.assign({}, state.editorArr);
+        tmp[action.id] = action.editor;
+      }
+      
+      return {
+        ...state,
+        editorArr: tmp,
+      };
+    case 'main removeEditor':
+      tmp = Object.assign({}, state.editorArr);
+      delete tmp[action.id];
+      tmp2 = state.activeOrder.slice();
+      tmp2.splice(tmp2.indexOf(action.id),1);
+      
+      return {
+        ...state,
+        editorArr: tmp,
+        activeOrder: tmp2,
+        activeEditorId: tmp2.length > 0 ? tmp2[0] : null,
+      };
     default:
       return state;
   }
@@ -51,11 +97,33 @@ export function setSideBarWidth(newWidth) {
 export function toggleToolBar() {
   return {
     type: 'main toggleToolBar'
-  }
+  };
 }
 
 export function toggleTabBar() {
   return {
     type: 'main toggleTabBar'
-  }
+  };
+}
+
+export function setActiveEditor(id) {
+  return {
+    type: 'main setActiveEditor',
+    id: id
+  };
+}
+
+export function addEditor(editor, id) {
+  return {
+    type: 'main addEditor',
+    editor: editor,
+    id: id,
+  };
+}
+
+export function removeEditor(id) {
+  return {
+    type: 'main removeEditor',
+    id: id,
+  };
 }

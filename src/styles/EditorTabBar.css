@@ -1,8 +1,81 @@
 #EditorTabBar-frame {
   position: absolute;
-  top: 40px;
-  left: 0px;
-  right: 0px;
+  width: 100%;
   height: 40px;
-  outline: 2px solid yellowgreen;
+  overflow: hidden;
+  background: rgb(220, 220, 220);
+}
+
+.ETB-xanchor-outer {
+  width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+
+.ETB-xanchor-inner {
+  /* width: 10000px; */
+  white-space: nowrap;
+  height: 40px;
+}
+
+.ETB-bg {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  height: 5px;
+  background: rgb(247, 247, 247);
+}
+
+.ETB-begin {
+  position: relative;
+  height: 33px;
+  width: 10px;
+  background: rgb(220, 220, 220);
+  display: inline-block;
+  z-index: 3;
+  line-height: 33px;
+  border-bottom-right-radius: 8px;
+}
+
+.ETB-end {
+  position: relative;
+  height: 33px;
+  width: 10px;
+  background: rgb(220, 220, 220);
+  display: inline-block;
+  z-index: 3;
+  line-height: 33px;
+  border-bottom-left-radius: 8px;
+}
+
+.ETB-new {
+  position: relative;
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  top: -4px;
+}
+.ETB-new-middle {
+  border-radius: 100%;
+  width: 26px;
+  height: 26px;
+}
+.ETB-new-inner {
+  position: relative;
+  top: 5px;
+  left: 7px;
+  font-size: 14px;
+  color: rgb(100,100,100);
+}
+.ETB-new-middle:hover {
+  background: rgb(210,210,210);
+}
+.ETB-new-middle:active {
+  background: rgb(200,200,200);
+}
+
+.ETB-break {
+  width: 0px;
+  display: inline-block;
 }

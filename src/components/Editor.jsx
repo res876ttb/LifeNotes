@@ -6,6 +6,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import Button from '@material-ui/core/Button';
+import { withStyles } from '@material-ui/core/styles';
 
 // ============================================
 // import react components
@@ -15,6 +17,10 @@ import EditorCore from './EditorCore.jsx';
 
 // ============================================
 // import react redux-action
+import {
+  addEditor,
+  setActiveEditor,
+} from '../states/mainState.js';
 
 // ============================================
 // import apis
@@ -34,27 +40,60 @@ class Editor extends React.Component {
     sideBarWidth: PropTypes.number,
     showToolBar: PropTypes.bool,
     showTabBar: PropTypes.bool,
+    editorArr: PropTypes.any,
   }
 
   constructor(props) {
     super(props);
+
+    this.handleNewEditor = this.handleNewEditor.bind(this);
 
     this.state = {
 
     };
   }
 
+  componentDidMount() {
+    this.handleNewEditor();
+    this.handleNewEditor();
+    this.handleNewEditor();
+  }
+
   render() {
+    let editorArrSize = Object.keys(this.props.editorArr).length;
+    let editorArr = [];
+    for (let i in this.props.editorArr) {
+      editorArr.push(this.props.editorArr[i]);
+    }
     return (
       <div id='Editor-frame' style={{left: `${this.props.sideBarWidth}px`, height: '100%'}}>
-        <EditorToolBar show={this.props.showToolBar} />
-        <EditorTabBar show={this.props.showTabBar} />
-        <EditorCore showToolBar={this.props.showToolBar} showTabBar={this.props.showTabBar} />
+        {editorArrSize === 0 ? (
+          <div id='Editor-empty-outer'>
+            <div id='Editor-empty-middle'>
+              <div id='Editor-empty-inner'>
+                <div style={{paddingBottom: '10px'}}>No document is opened.</div>
+                <Button onClick={this.handleNewEditor} variant="outlined" color="primary">Create a new document</Button>
+              </div>
+            </div>
+          </div>
+        ) : editorArr}
+        <EditorToolBar />
+        <EditorTabBar newEditor={this.handleNewEditor} />
       </div>
     );
+  }
+
+  handleNewEditor() {
+    let id = Math.random().toString();
+    let newEditor = <EditorCore initValue={''} id={id} key={Math.random()} />;
+    this.props.dispatch(addEditor(newEditor, id));
+    this.props.dispatch(setActiveEditor(id));
   }
 }
 
 export default connect (state => ({
   sideBarWidth: state.main.sideBarWidth,
+  showToolBar: state.main.showToolBar,
+  showTabBar: state.main.showTabBar,
+  editorArr: state.main.editorArr,
 }))(Editor);

@@ -1,0 +1,83 @@
+.ETBI-frame {
+  height: 33px;
+  display: inline-block;
+  line-height: 33px;
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
+  background: rgb(247, 247, 247);
+  padding: 0px 10px 0px 15px;
+  margin-top: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.ETBI-frame-inactive {
+  border-radius: 8px;
+  background: rgb(220, 220, 220);
+  z-index: 2;
+  transition: 0.3s;
+}
+
+.ETBI-frame-inactive:hover {
+  background: rgb(235, 235, 235);
+}
+
+.ETBI-bgr-l {
+  height: 10px;
+  position: absolute;
+  left: -10px;
+  right: 100%;
+  bottom: 0px;
+  background: rgb(247, 247, 247);
+}
+
+.ETBI-bgr-r {
+  height: 10px;
+  position: absolute;
+  right: -10px;
+  left: 100%;
+  bottom: 0px;
+  background: rgb(247, 247, 247);
+}
+
+.ETBI-close {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  margin-left: 5px;
+  border-radius: 100px;
+  position: relative;
+  top: 8.5px;
+  text-align: center;
+  color: rgb(100, 100, 100);
+  display: inline-block;
+}
+
+.ETBI-close-inner {
+  position: relative;
+  top: -7px;
+  z-index: 2;
+  color: rgb(247,247,247);
+}
+
+.ETBI-close-inner-inactive {
+  color: rgb(220, 220, 220);
+}
+
+.ETBI-close-inner:hover {
+  color: rgb(220, 220, 220);
+}
+
+.ETBI-close-inner:active {
+  color: rgb(208, 208, 208);
+}
+
+.ETBI-close-color {
+  width: 10px;
+  height: 10px;
+  position: relative;
+  left: 3px;
+  top: -30px;
+  background: rgb(100, 100, 100);
+  z-index: 1;
+}

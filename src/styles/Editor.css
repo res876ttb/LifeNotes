@@ -5,3 +5,25 @@
   right: 0px;
   outline: 2px brown solid;
 }
+
+#Editor-empty-outer {
+  display: table;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background: rgb(247, 247, 247);
+}
+#Editor-empty-middle {
+  display: table-cell;
+  vertical-align: middle
+}
+#Editor-empty-inner {
+  margin-left: auto;
+  margin-right: auto;
+  width: 420px;
+  /* height: 200px; */
+  padding: 20px 30px;
+  background: rgb(230,230,230);
+  border-radius: 1px;
+  text-align: center;
+}

@@ -13,6 +13,7 @@ import {connect} from 'react-redux';
 
 // ============================================
 // import react redux-action
+// import {setActiveEditor} from '../states/mainState.js';
 
 // ============================================
 // import apis
@@ -32,6 +33,10 @@ class EditorCore extends React.Component {
     dispatch: PropTypes.func,
     showTabBar: PropTypes.bool,
     showToolBar: PropTypes.bool,
+    editor: PropTypes.any,
+    id: PropTypes.string,
+    initValue: PropTypes.string,
+    activeEditorId: PropTypes.string,
   }
 
   constructor(props) {
@@ -39,16 +44,16 @@ class EditorCore extends React.Component {
 
     this.handleKeyDown = this.handleKeyDown.bind(this);
 
+    let id = Math.random();
+
     this.state = {
       mac: false,       // if current os is macOS
-      content: '<div></div>',
-      idPostfix: Math.random().toString(),
       editor: null
     };
   }
 
   componentDidMount() {
-    let myTextarea = document.getElementById('EditorCore-frame' + this.state.idPostfix);
+    let myTextarea = document.getElementById('EditorCore-frame' + this.props.id);
 
     let editor = HyperMD.fromTextArea(myTextarea, {
       mode: {
@@ -70,76 +75,7 @@ class EditorCore extends React.Component {
       tabSize: 2,
     });
     editor.setSize(null, "100%");
-    editor.setValue(
-"# HyperMD Documentation\n\
-\n\
-![HyperMD Logo](http://laobubu.net/HyperMD/demo/logo.png)\n\
-\n\
-[中文文檔](./zh-CN/index.md)\n\
->**Notice**\n\
->\n\
->All links are DIRECTLY clickable. Feel free to click without `Ctrl` or `Alt`!\n\
->>Second quote\n\
-\n\
->**Notice**\n\
->\n\
->Some document files are auto generated and excluded in source code repository.\n\
->\n\
->Please read this document on\n\
->[HyperMD Demo](https://laobubu.net/HyperMD/?directOpen#./docs/index.md)\n\
->or\n\
->[GitHub gh-pages branch](https://github.com/laobubu/HyperMD/blob/gh-pages/docs/index.md)\n\
-\n\
-## table\n\
-| header1 | header 2 | header 3 | header 4 |\n\
-| ------- | :------- | -------: | :------: |\n\
-| 123 | 123 | 123 | 123 |\n\
-\n\
-## codeblock ##\n\
-```cpp\n\
-#include <iostream>\n\
-using namespace std;\n\
-\n\
-int main() {\n\
-  printf(\"Hello world!\\n\");\n\
-  return 0;\n\
-}\n\
-```\n\
-\n\
-## flowchart ##\n\
-```flow\n\
-st=>start: Start:>http://www.google.com[blank]\n\
-e=>end:>http://www.google.com\n\
-op1=>operation: My Operation\n\
-sub1=>subroutine: My Subroutine\n\
-cond=>condition: Yes\n\
-or No?:>http://www.google.com\n\
-io=>inputoutput: catch something...\n\
-para=>parallel: parallel tasks\n\
-\n\
-st->op1->cond\n\
-cond(yes)->io->e\n\
-cond(no)->para\n\
-para(path1, bottom)->sub1(right)->op1\n\
-para(path2, top)->op1\n\
-```\n\
-\n\
-## mermaid ##\n\
-```mermaid\n\
-graph TD;\n\
-    A-->B;\n\
-    A-->C;\n\
-    B-->D;\n\
-    C-->D;\n\
-```\n\
-\n\
-## html ##\n\
-<div>html</div>\n\
-\n\
-end\n\
-\n\
-"
-    )
+    editor.setValue(this.props.initValue);
     
     this.setState({
       // detect os version
@@ -147,6 +83,8 @@ end\n\
       // set hypermd
       editor: editor
     });
+
+    // this.props.dispatch(setActiveEditor(editor));
 
     // let editable = document.getElementById('EditorCore-frame');
     // editable.addEventListener('input', this.handleInputChar);
@@ -157,9 +95,12 @@ end\n\
     if (this.props.showTabBar) top += 40;
     if (this.props.showToolBar) top += 40;
     return (
-      <div className='EditorCore-frame' style={{top: `${top}px`}} onKeyDown={this.handleKeyDown}>
+      <div className='EditorCore-frame' style={{
+        top: `${top}px`,
+        zIndex: this.props.id === this.props.activeEditorId ? '1' : '0',
+      }} onKeyDown={this.handleKeyDown}>
         <div className='EditorCore-HMD-wrapper'>
-          <textarea id={'EditorCore-frame' + this.state.idPostfix}></textarea>
+          <textarea id={'EditorCore-frame' + this.props.id}></textarea>
         </div>
       </div>
     );
@@ -278,5 +219,7 @@ end\n\
 }
 
 export default connect (state => ({
-  
+  showTabBar: state.main.showTabBar,
+  showToolBar: state.main.showToolBar,
+  activeEditorId: state.main.activeEditorId,
 }))(EditorCore);

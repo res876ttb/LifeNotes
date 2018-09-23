@@ -31,10 +31,13 @@ class EditorToolBar extends React.Component {
   static propTypes = {
     dispatch: PropTypes.func,
     show: PropTypes.bool,
+    editor: PropTypes.any,
   }
 
   constructor(props) {
     super(props);
+
+    this.handleBold = this.handleBold.bind(this);
 
     this.state = {
 
@@ -47,10 +50,11 @@ class EditorToolBar extends React.Component {
         <div id='EditorToolBar-frame'>
           <div id='EditorToolBar-xanchor-outer'>
             <div id='EditorToolBar-xanchor-inner'>
+              <div style={{width: '2px', display: 'inline-block', height: '10px'}}></div>
               <EditorToolBarButton icon={(<i className="fas fa-undo"></i>)} />
               <EditorToolBarButton icon={(<i className="fas fa-redo"></i>)} />
               <div style={{width: '10px', display: 'inline-block', height: '10px'}}></div>
-              <EditorToolBarButton icon={(<i className="fas fa-bold"></i>)} />
+              <EditorToolBarButton click={this.handleBold} icon={(<i className="fas fa-bold"></i>)} />
               <EditorToolBarButton icon={(<i className="fas fa-italic"></i>)} />
               <EditorToolBarButton icon={(<i className="fas fa-underline"></i>)} style={{paddingBottom: '6px'}}/>
               <EditorToolBarButton icon={(<i className="fas fa-strikethrough"></i>)} />
@@ -68,8 +72,15 @@ class EditorToolBar extends React.Component {
       ) : null}</div>
     );
   }
+
+  handleBold() {
+    console.log(this.props.editor.getRange());
+
+    // this.props.editor.execCommand('hmdTab');
+  }
 }
 
 export default connect (state => ({
-
+  editor: state.main.activeEditor,
+  show: state.main.showToolBar,
 }))(EditorToolBar);
