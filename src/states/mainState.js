@@ -16,6 +16,7 @@ const initMainState = {
   activeEditorId: null,
   editorArr: {},
   activeOrder: [],
+  titleArr: {},
 }
 
 // ============================================
@@ -80,6 +81,14 @@ export function main(state=initMainState, action) {
         activeOrder: tmp2,
         activeEditorId: tmp2.length > 0 ? tmp2[0] : null,
       };
+
+    case 'main setTitle':
+      tmp = Object.assign({}, state.titleArr);
+      tmp[action.id] = action.title;
+      return {
+        ...state,
+        titleArr: tmp,
+      };
     default:
       return state;
   }
@@ -126,4 +135,12 @@ export function removeEditor(id) {
     type: 'main removeEditor',
     id: id,
   };
+}
+
+export function setTitle(id, title) {
+  return {
+    type: 'main setTitle',
+    id: id, 
+    title: title,
+  }
 }

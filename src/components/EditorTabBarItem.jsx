@@ -33,9 +33,9 @@ class EditorTabBarItem extends React.Component {
   static propTypes = {
     dispatch: PropTypes.func,
     click: PropTypes.func,
-    title: PropTypes.string,
     id: PropTypes.string,
     activeEditorId: PropTypes.string,
+    titleArr: PropTypes.any,
   }
 
   constructor(props) {
@@ -50,11 +50,16 @@ class EditorTabBarItem extends React.Component {
   }
 
   render() {
+    let title = this.props.titleArr[this.props.id];
+    if (!title) {
+      title = 'Untitled';
+    }
+
     if (this.props.activeEditorId === this.props.id) {
       // active
       return (
         <div className="ETBI-frame" onMouseUp={this.handleSetActiveEditor}>
-          {this.props.title}
+          {title}
           <div className="ETBI-close" onMouseUp={this.handleCloseEditor}>
             <div className="ETBI-close-inner">
               <i className="fas fa-times-circle"></i>
@@ -69,7 +74,7 @@ class EditorTabBarItem extends React.Component {
       // inactive
       return (
         <div className="ETBI-frame ETBI-frame-inactive" onMouseUp={this.handleSetActiveEditor}>
-          {this.props.title}
+          {title}
           <div className="ETBI-close" onMouseUp={this.handleCloseEditor}>
             <div className="ETBI-close-inner ETBI-close-inner-inactive">
               <i className="fas fa-times-circle"></i>
@@ -93,4 +98,5 @@ class EditorTabBarItem extends React.Component {
 
 export default connect (state => ({
   activeEditorId: state.main.activeEditorId,
+  titleArr: state.main.titleArr,
 }))(EditorTabBarItem);

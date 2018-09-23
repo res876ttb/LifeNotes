@@ -52,7 +52,7 @@ class EditorTabBar extends React.Component {
     
     // get all available tab
     for (let i in this.props.editorArr) {
-      tabs.push(<EditorTabBarItem id={i} title={i} key={i}/>);
+      tabs.push(<EditorTabBarItem id={i} key={i}/>);
     }
 
     // reorder tabs

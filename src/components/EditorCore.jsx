@@ -22,6 +22,7 @@ import {connect} from 'react-redux';
 // import css file
 import '../styles/EditorCore.css';
 import '../styles/hyperMD.css';
+import { setTitle } from '../states/mainState';
 
 // ============================================
 // constants
@@ -37,6 +38,7 @@ class EditorCore extends React.Component {
     id: PropTypes.string,
     initValue: PropTypes.string,
     activeEditorId: PropTypes.string,
+    titleArr: PropTypes.any,
   }
 
   constructor(props) {
@@ -83,10 +85,23 @@ class EditorCore extends React.Component {
       editor: editor
     });
 
-    // this.props.dispatch(setActiveEditor(editor));
-
-    // let editable = document.getElementById('EditorCore-frame');
-    // editable.addEventListener('input', this.handleInputChar);
+    setInterval(() => {
+      if (this.state.editor.hasFocus()) {
+        if (this.props.id === this.props.activeEditorId) {
+          let title = this.state.editor.getLine(0);
+          if (title.match(/^#{1,6}[\t\ ]+[\S\ \t]+/)) {
+            title = title.replace(/^#{1,6}[\t\ ]+/, '');
+            title = title.replace(/#+$/, '');
+            title = title.replace(/[\ \t]+$/, '');
+            if (this.props.titleArr[this.props.id] !== title) {
+              this.props.dispatch(setTitle(this.props.id, title));
+            }
+          } else if (this.props.titleArr[this.props.id] !== 'Untitled') {
+            this.props.dispatch(setTitle(this.props.id, 'Untitled'));
+          }
+        } 
+      }  
+    }, 3000);
   }
 
   render() {
@@ -225,4 +240,5 @@ export default connect (state => ({
   showTabBar: state.main.showTabBar,
   showToolBar: state.main.showToolBar,
   activeEditorId: state.main.activeEditorId,
+  titleArr: state.main.titleArr,
 }))(EditorCore);
