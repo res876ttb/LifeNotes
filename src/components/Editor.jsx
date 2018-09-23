@@ -55,8 +55,6 @@ class Editor extends React.Component {
 
   componentDidMount() {
     this.handleNewEditor();
-    this.handleNewEditor();
-    this.handleNewEditor();
   }
 
   render() {

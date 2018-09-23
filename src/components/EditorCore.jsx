@@ -43,8 +43,7 @@ class EditorCore extends React.Component {
     super(props);
 
     this.handleKeyDown = this.handleKeyDown.bind(this);
-
-    let id = Math.random();
+    this.handleClick = this.handleClick.bind(this);
 
     this.state = {
       mac: false,       // if current os is macOS
@@ -98,12 +97,16 @@ class EditorCore extends React.Component {
       <div className='EditorCore-frame' style={{
         top: `${top}px`,
         zIndex: this.props.id === this.props.activeEditorId ? '1' : '0',
-      }} onKeyDown={this.handleKeyDown}>
+      }} onKeyDown={this.handleKeyDown} onClick={this.handleClick}>
         <div className='EditorCore-HMD-wrapper'>
           <textarea id={'EditorCore-frame' + this.props.id}></textarea>
         </div>
       </div>
     );
+  }
+
+  handleClick() {
+    this.state.editor.focus();
   }
 
 /**
@@ -112,9 +115,9 @@ class EditorCore extends React.Component {
  *       Sensor of watcher
  */
   handleKeyDown(e) {
-    setTimeout(() => {
-      // console.log(this.state.editor.getValue());
-    }, 1);
+    // setTimeout(() => {
+    //   console.log(this.state.editor.getValue());
+    // }, 1);
     return;
 
 
