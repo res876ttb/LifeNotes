@@ -4,11 +4,40 @@
   line-height: 33px;
   border-top-right-radius: 8px;
   border-top-left-radius: 8px;
-  background: rgb(247, 247, 247);
-  padding: 0px 10px 0px 15px;
   margin-top: 2px;
   position: relative;
-  z-index: 1;
+}
+
+.ETBI-frame-inner {
+  position: relative;
+  left: 0px;
+  right: 0px;
+  border-radius: 8px;
+  height: 33px;
+  padding: 0px 10px 0px 15px;
+  background: rgb(247, 247, 247);
+  transition: 0.3s;
+}
+
+.ETBI-frame-inner-dragover {
+  background: white;
+}
+
+.ETBI-frame-inner-inactive {
+  border-radius: 8px;
+  background: rgb(220, 220, 220);
+}
+
+.ETBI-frame-inner-inactive-dragover {
+  background: rgb(235,235,235);
+}
+
+.ETBI-frame-inner-inactive:hover {
+  background: rgb(235, 235, 235);
+}
+
+.ETBI-onDrag {
+  /* background: rgb(255, 255, 255); */
 }
 
 .ETBI-frame-inactive {

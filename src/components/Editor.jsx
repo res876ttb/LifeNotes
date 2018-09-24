@@ -83,7 +83,7 @@ class Editor extends React.Component {
 
   handleNewEditor() {
     let id = Math.random().toString();
-    let newEditor = <EditorCore initValue={''} id={id} key={Math.random()} />;
+    let newEditor = <EditorCore initValue={''} id={id} key={id} />;
     this.props.dispatch(addEditor(newEditor, id));
     this.props.dispatch(setActiveEditor(id));
   }

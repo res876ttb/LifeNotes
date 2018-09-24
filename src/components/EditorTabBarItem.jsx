@@ -36,6 +36,8 @@ class EditorTabBarItem extends React.Component {
     id: PropTypes.string,
     activeEditorId: PropTypes.string,
     titleArr: PropTypes.any,
+    setDrag: PropTypes.func,
+    setDrop: PropTypes.func,
   }
 
   constructor(props) {
@@ -43,47 +45,52 @@ class EditorTabBarItem extends React.Component {
 
     this.handleSetActiveEditor = this.handleSetActiveEditor.bind(this);
     this.handleCloseEditor = this.handleCloseEditor.bind(this);
+    this.handleDragStart = this.handleDragStart.bind(this);
+    this.handleDragOver = this.handleDragOver.bind(this);
+    this.handleOnDrop = this.handleOnDrop.bind(this);
+    this.handleDragLeave = this.handleDragLeave.bind(this);
 
     this.state = {
       width: 1,
+      dragOver: false,
     };
   }
 
   render() {
     let title = this.props.titleArr[this.props.id];
+    let active = this.props.activeEditorId === this.props.id;
     if (!title) {
       title = 'Untitled';
     }
 
-    if (this.props.activeEditorId === this.props.id) {
-      // active
-      return (
-        <div className="ETBI-frame" onMouseUp={this.handleSetActiveEditor}>
+    return (
+      <div className="ETBI-frame" onClick={this.handleSetActiveEditor} style={{
+        zIndex: (active ? '1' : '2'),
+        background: (active ? 'rgb(247, 247, 247)' : 'rgb(220, 220, 220)'),
+        borderBottomRightRadius: (active ? '0px' : '8px'),
+        borderBottomLeftRadius: (active ? '0px' : '8px'),
+      }}>
+        <div className={"ETBI-frame-inner" + 
+          (active ? (this.state.dragOver ? " ETBI-frame-inner-dragover" : "") : 
+                    (this.state.dragOver ? " ETBI-frame-inner-inactive ETBI-frame-inner-inactive-dragover" : " ETBI-frame-inner-inactive"))}
+          draggable="true" 
+          onDragStart={this.handleDragStart}
+          onDragOver={this.handleDragOver}
+          onDrop={this.handleOnDrop}
+          onDragLeave={this.handleDragLeave}
+        >
           {title}
-          <div className="ETBI-close" onMouseUp={this.handleCloseEditor}>
-            <div className="ETBI-close-inner">
-              <i className="fas fa-times-circle"></i>
-            </div>
-            <div className="ETBI-close-color"></div>
-          </div>
-          <div className="ETBI-bgr-l"></div>
-          <div className="ETBI-bgr-r"></div>
-        </div>
-      );
-    } else {
-      // inactive
-      return (
-        <div className="ETBI-frame ETBI-frame-inactive" onMouseUp={this.handleSetActiveEditor}>
-          {title}
-          <div className="ETBI-close" onMouseUp={this.handleCloseEditor}>
-            <div className="ETBI-close-inner ETBI-close-inner-inactive">
+          <div className="ETBI-close" onClick={this.handleCloseEditor}>
+            <div className={"ETBI-close-inner" + (active ? "" : " ETBI-close-inner-inactive")}>
               <i className="fas fa-times-circle"></i>
             </div>
             <div className="ETBI-close-color"></div>
           </div>
         </div>
-      );
-    }
+        <div className="ETBI-bgr-l" style={{display: (active ? 'block' : 'none')}}></div>
+        <div className="ETBI-bgr-r" style={{display: (active ? 'block' : 'none')}}></div>
+      </div>
+    );
   }
 
   handleSetActiveEditor() {
@@ -93,6 +100,36 @@ class EditorTabBarItem extends React.Component {
   handleCloseEditor(e) {
     e.stopPropagation();
     this.props.dispatch(removeEditor(this.props.id));
+  }
+
+  handleDragStart(e) {
+    e.dataTransfer.effectAllowed = 'copy'; // only dropEffect='copy' will be dropable
+    e.dataTransfer.setData('Text', this.id); // required otherwise doesn't work
+    this.props.setDrag(this.props.id);
+  }
+
+  handleDragOver(e) {
+    e.preventDefault();
+    if (this.state.dragOver === false) {
+      this.setState({
+        dragOver: true,
+      });
+    } 
+  }
+
+  handleOnDrop() {
+    this.props.setDrop(this.props.id);
+    this.setState({
+      dragOver: false,
+    });
+  }
+
+  handleDragLeave() {
+    if (this.state.dragOver === true) {
+      this.setState({
+        dragOver: false,
+      });
+    }
   }
 }
 

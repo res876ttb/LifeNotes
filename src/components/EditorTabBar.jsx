@@ -13,6 +13,7 @@ import EditorTabBarItem from './EditorTabBarItem.jsx';
 
 // ============================================
 // import react redux-action
+import {swapTab} from '../states/mainState.js';
 
 // ============================================
 // import apis
@@ -32,6 +33,7 @@ class EditorTabBar extends React.Component {
     show: PropTypes.bool,
     showToolBar: PropTypes.bool,
     editorArr: PropTypes.any,
+    tabArr: PropTypes.any,
     newEditor: PropTypes.func,
   }
 
@@ -39,9 +41,11 @@ class EditorTabBar extends React.Component {
     super(props);
 
     this.handleNewEditor = this.handleNewEditor.bind(this);
+    this.setDrag = this.setDrag.bind(this);
+    this.setDrop = this.setDrop.bind(this);
 
     this.state = {
-      orders: []
+      dragId: null,
     };
   }
 
@@ -49,14 +53,12 @@ class EditorTabBar extends React.Component {
     let top = 0;
     if (this.props.showToolBar) top += 40;
     let tabs = [];
-    
-    // get all available tab
-    for (let i in this.props.editorArr) {
-      tabs.push(<EditorTabBarItem id={i} key={i}/>);
-    }
 
     // reorder tabs
-
+    for (let i in this.props.tabArr) {
+      let id = this.props.tabArr[i];
+      tabs.push(<EditorTabBarItem setDrag={this.setDrag} setDrop={this.setDrop} id={id} key={id}/>)
+    }
 
     return (
       this.props.show ? (
@@ -84,16 +86,24 @@ class EditorTabBar extends React.Component {
   handleNewEditor() {
     this.props.newEditor();
   }
+
+  setDrag(id) {
+    this.setState({
+      dragId: id
+    });
+  }
+
+  setDrop(id) {
+    this.setState({
+      dragId: null,
+    });
+    this.props.dispatch(swapTab(id, this.state.dragId));
+  }
 }
 
 export default connect (state => ({
   show: state.main.showTabBar,
   showToolBar: state.main.showToolBar,
   editorArr: state.main.editorArr,
+  tabArr: state.main.tabArr,
 }))(EditorTabBar);
-
-/*
-editor: id, editor <= push editor into editorArr
-tab: order, id, editorArr
-drag&drop: get order of the tab, then change editor order in editorArr
-*/

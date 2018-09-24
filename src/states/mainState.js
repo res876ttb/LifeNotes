@@ -17,6 +17,7 @@ const initMainState = {
   editorArr: {},
   activeOrder: [],
   titleArr: {},
+  tabArr: [],
 }
 
 // ============================================
@@ -64,20 +65,27 @@ export function main(state=initMainState, action) {
         tmp = Object.assign({}, state.editorArr);
         tmp[action.id] = action.editor;
       }
+
+      tmp1 = state.tabArr.slice();
+      tmp1.push(action.id);
       
       return {
         ...state,
         editorArr: tmp,
+        tabArr: tmp1,
       };
     case 'main removeEditor':
       tmp = Object.assign({}, state.editorArr);
       delete tmp[action.id];
+      tmp1 = state.tabArr.slice();
+      tmp1.splice(tmp1.indexOf(action.id),1);
       tmp2 = state.activeOrder.slice();
       tmp2.splice(tmp2.indexOf(action.id),1);
       
       return {
         ...state,
         editorArr: tmp,
+        tabArr: tmp1,
         activeOrder: tmp2,
         activeEditorId: tmp2.length > 0 ? tmp2[0] : null,
       };
@@ -89,6 +97,17 @@ export function main(state=initMainState, action) {
         ...state,
         titleArr: tmp,
       };
+
+    case 'main swapTab':
+      tmp = state.tabArr.slice();
+      tmp1 = tmp.indexOf(action.id1);
+      tmp2 = tmp.indexOf(action.id2);
+      tmp[tmp1] = action.id2;
+      tmp[tmp2] = action.id1;
+      return {
+        ...state,
+        tabArr: tmp,
+      }
     default:
       return state;
   }
@@ -142,5 +161,13 @@ export function setTitle(id, title) {
     type: 'main setTitle',
     id: id, 
     title: title,
-  }
+  };
+}
+
+export function swapTab(id1, id2) {
+  return {
+    type: 'main swapTab',
+    id1: id1,
+    id2: id2
+  };
 }
