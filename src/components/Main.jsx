@@ -12,14 +12,15 @@ import {connect} from 'react-redux';
 import SideBar from './SideBar.jsx';
 import Editor from './Editor.jsx';
 
-import EditorCore from './EditorCore.jsx';
-
 // ============================================
 // import react redux-action
 import {setSideBarWidth} from '../states/mainState.js';
 
 // ============================================
 // import apis
+import {
+  runTest
+} from '../utils/storage.js';
 
 // ============================================
 // import css file
@@ -46,6 +47,10 @@ class Main extends React.Component {
     this.state = {
       mouseDown: false,
     };
+  }
+
+  componentDidMount() {
+    // runTest();
   }
 
   render() {
