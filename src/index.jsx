@@ -19,6 +19,7 @@ import Main from 'components/Main.jsx';
 // ============================================
 // import react redux-reducers
 import {main} from 'states/mainState.js';
+import {setting} from 'states/settingState.js';
 
 // ============================================
 // import apis
@@ -32,7 +33,7 @@ import {main} from 'states/mainState.js';
 window.onload = function() {
   const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
   const store = createStore(combineReducers({
-    main,
+    main, setting
   }), composeEnhancers(applyMiddleware(thunkMiddleware)));
 
   // customize global material theme

@@ -3,6 +3,9 @@
 
 // ============================================
 // import
+import {
+  updateNoteIndexFile
+} from '../utils/storage.js';
 
 // ============================================
 // functions
@@ -18,6 +21,9 @@ const initMainState = {
   activeOrder: [],
   titleArr: {},
   tabArr: [],
+  noteIndex: null,
+  dispatcher: null,
+  noteOpener: null,
 }
 
 // ============================================
@@ -32,16 +38,19 @@ export function main(state=initMainState, action) {
         ...state,
         sideBarWidth: action.newWidth,
       };
+
     case 'main toggleToolBar':
       return {
         ...state, 
         showToolBar: !state.showToolBar
       };
+
     case 'main showTabBar':
       return {
         ...state,
         showTabBar: !state.showTabBar
       };
+
     case 'main setActiveEditor': 
       tmp = state.activeOrder.slice();
       if (tmp.indexOf(action.id) === -1) {
@@ -57,6 +66,7 @@ export function main(state=initMainState, action) {
         activeEditorId: action.id,
         activeOrder: tmp,
       };
+
     case 'main addEditor':
       if (Object.keys(state.editorArr).length === 0) {
         tmp = {};
@@ -74,6 +84,7 @@ export function main(state=initMainState, action) {
         editorArr: tmp,
         tabArr: tmp1,
       };
+
     case 'main removeEditor':
       tmp = Object.assign({}, state.editorArr);
       delete tmp[action.id];
@@ -107,7 +118,38 @@ export function main(state=initMainState, action) {
       return {
         ...state,
         tabArr: tmp,
+      };
+
+    case 'main updateNoteIndex':
+      updateNoteIndexFile(action.noteIndex);
+      return {
+        ...state,
+        noteIndex: {...action.noteIndex}
+      };
+
+    case 'main setDispatcher':
+      return {
+        ...state,
+        dispatcher: action.dispatcher
       }
+
+    case 'main setNoteOpener':
+      return {
+        ...state,
+        noteOpener: action.opener,
+      };
+
+    case 'main openNote':
+      if (state.tabArr.indexOf(action.noteid) === -1) {
+        state.noteOpener(action.noteid, action.ppath);
+        return state;
+      } else {
+        return {
+          ...state,
+          activeEditorId: action.noteid,
+        };
+      }
+
     default:
       return state;
   }
@@ -169,5 +211,34 @@ export function swapTab(id1, id2) {
     type: 'main swapTab',
     id1: id1,
     id2: id2
+  };
+}
+
+export function updateNoteIndex(noteIndex) {
+  return {
+    type: 'main updateNoteIndex',
+    noteIndex: noteIndex
+  };
+}
+
+export function setDispatcher(dispatcher) {
+  return {
+    type: 'main setDispatcher',
+    dispatcher: dispatcher,
+  };
+}
+
+export function openNote(noteid, ppath) {
+  return {
+    type: 'main openNote',
+    noteid: noteid,
+    ppath: ppath,
+  };
+}
+
+export function setNoteOpener(opener) {
+  return {
+    type: 'main setNoteOpener',
+    opener: opener,
   };
 }

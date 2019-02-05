@@ -14,15 +14,21 @@ import {connect} from 'react-redux';
 // ============================================
 // import react redux-action
 // import {setActiveEditor} from '../states/mainState.js';
+import { 
+  setTitle,
+  updateNoteIndex,
+} from '../states/mainState';
 
 // ============================================
 // import apis
+import { 
+  updateTitle,
+} from '../utils/storage.js';
 
 // ============================================
 // import css file
 import '../styles/EditorCore.css';
 import '../styles/hyperMD.css';
-import { setTitle } from '../states/mainState';
 
 // ============================================
 // constants
@@ -39,6 +45,11 @@ class EditorCore extends React.Component {
     initValue: PropTypes.string,
     activeEditorId: PropTypes.string,
     titleArr: PropTypes.any,
+    updateNoteArr: PropTypes.func,
+    saveNote: PropTypes.func,
+    ppath: PropTypes.string,
+    noteIndex: PropTypes.object,
+    changeNoteSignal: PropTypes.func,
   }
 
   constructor(props) {
@@ -46,10 +57,11 @@ class EditorCore extends React.Component {
 
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.updateTitle = this.updateTitle.bind(this);
 
     this.state = {
       mac: false,       // if current os is macOS
-      editor: null
+      editor: null,
     };
   }
 
@@ -85,23 +97,23 @@ class EditorCore extends React.Component {
       editor: editor
     });
 
+    this.props.updateNoteArr(this.props.id, {modified: true, editor: editor});
+
     setInterval(() => {
       if (this.state.editor.hasFocus()) {
         if (this.props.id === this.props.activeEditorId) {
-          let title = this.state.editor.getLine(0);
-          if (title.match(/^#{1,6}[\t\ ]+[\S\ \t]+/)) {
-            title = title.replace(/^#{1,6}[\t\ ]+/, '');
-            title = title.replace(/#+$/, '');
-            title = title.replace(/[\ \t]+$/, '');
-            if (this.props.titleArr[this.props.id] !== title) {
-              this.props.dispatch(setTitle(this.props.id, title));
-            }
-          } else if (this.props.titleArr[this.props.id] !== 'Untitled') {
-            this.props.dispatch(setTitle(this.props.id, 'Untitled'));
-          }
+          this.updateTitle();
         } 
       }  
     }, 1000);
+
+    setTimeout(() => {
+      this.updateTitle();
+    }, 1);
+  }
+
+  componentWillUnmount() {
+    this.props.saveNote();
   }
 
   render() {
@@ -114,83 +126,38 @@ class EditorCore extends React.Component {
         zIndex: this.props.id === this.props.activeEditorId ? '1' : '0',
       }} onKeyDown={this.handleKeyDown} onClick={this.handleClick}>
         <div className='EditorCore-HMD-wrapper'>
-          <textarea id={'EditorCore-frame' + this.props.id}></textarea>
+          <textarea id={'EditorCore-frame' + this.props.id} onKeyDown={this.handleKeyDown}></textarea>
         </div>
       </div>
     );
+  }
+
+  updateTitle() {
+    let title = this.state.editor.getLine(0);
+    if (title.match(/^#{1,6}[\t\ ]+[\S\ \t]+/)) {
+      title = title.replace(/^#{1,6}[\t\ ]+/, '');
+      title = title.replace(/#+$/, '');
+      title = title.replace(/[\ \t]+$/, '');
+      if (this.props.titleArr[this.props.id] !== title) {
+        this.props.dispatch(setTitle(this.props.id, title));
+        updateTitle(title, this.props.ppath, this.props.id, this.props.noteIndex, newNoteIndex => {
+          this.props.dispatch(updateNoteIndex(newNoteIndex));
+        });
+      }
+    } else if (this.props.titleArr[this.props.id] !== 'Untitled') {
+      this.props.dispatch(setTitle(this.props.id, 'Untitled'));
+      updateTitle('Untitled', this.props.ppath, this.props.id, this.props.noteIndex, newNoteIndex => {
+        this.props.dispatch(updateNoteIndex(newNoteIndex));
+      });
+    }
   }
 
   handleClick() {
     this.state.editor.focus();
   }
 
-/**
- * @func handleKeyDown
- * @desc Watch the keyboard event, including typing and shortcuts
- *       Sensor of watcher
- */
   handleKeyDown(e) {
-    // setTimeout(() => {
-    //   console.log(this.state.editor.getValue());
-    // }, 1);
-    return;
-
-
-    // key: 46 for delete key, 8 for backspace
-    let key = e.which | e.code;
-    let meta = e.metaKey;
-    let alt = e.altKey;
-    let ctrl = e.ctrlKey;
-    let shift = e.shiftKey;
-    let prefix = meta || alt || ctrl;
-
-    // prevent any default event except arrow keys, navigation keys, and any shortcut with prefix
-    // if ((key > 40 || key < 33) && !prefix) e.preventDefault();
-
-    // prevent default enter event, replace it with shift-enter event, and set a flag 
-    //  which represents that this is an event with enter-only
-    // if (key === 13 && !shift) {
-    //   e.preventDefault();
-    // }
-
-    let sel = window.getSelection();
-
-    console.log(`key: ${key}, prefix: ${prefix}, meta: ${meta}, alt: ${alt}, ctrl: ${ctrl}, shift: ${shift}`);
-
-    // // the event is shortcut event or caret movement event
-    // if ((key > 40 || key < 33) && !prefix && key !== 13) return;
-
-    let ke = {
-      type: 3, // 3 means this is a keyboard event
-      key: key,
-      prefix: prefix,
-      meta: meta,
-      alt: alt,
-      ctrl: ctrl,
-      shift: shift
-    };
-
-    // this.handleBold(ke, sel);
-  }
-
-  handleBold(ke, sel) {
-    this.getCurLine(sel);
-    // console.log(sel.anchorNode);
-  }
-
-  getCurLine(sel) {
-    let curNode = sel.anchorNode;
-    let parentNode = curNode.parentNode;
-    while (true) {
-      if (parentNode.innerText != undefined && 
-          (parentNode.innerText.match('\n') !== null ||
-           parentNode.id === 'EditorCore-frame')) {
-        break;
-      }
-      curNode = parentNode;
-      parentNode = curNode.parentNode;
-    }
-    console.log(curNode.innerHTML);
+    this.props.changeNoteSignal(this.props.id);
   }
 
 /**
@@ -219,21 +186,6 @@ class EditorCore extends React.Component {
       }
     }
   }
-
-/**
- * @func getHotkey
- * @desc Return the hotkey pressed currently
- */
-  getHotkey(key, meta, alt, ctrl, shift) {
-    let cmd = (this.state.mac) ? meta : ctrl;
-    // undo
-    if (cmd && key === 90) return 'undo';
-    // redo
-    if (cmd && shift && key === 90) return 'redo';
-    // copy 
-    // ...
-    return null;
-  }
 }
 
 export default connect (state => ({
@@ -241,4 +193,5 @@ export default connect (state => ({
   showToolBar: state.main.showToolBar,
   activeEditorId: state.main.activeEditorId,
   titleArr: state.main.titleArr,
+  noteIndex: state.main.noteIndex,
 }))(EditorCore);

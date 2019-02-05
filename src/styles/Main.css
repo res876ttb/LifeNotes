@@ -12,3 +12,12 @@ html, body {
   width: 100%;
   min-width: 600px;
 }
+
+.noSelect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
