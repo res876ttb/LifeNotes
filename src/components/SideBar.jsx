@@ -64,10 +64,13 @@ class SideBar extends React.Component {
     }
 
     return (
-      <div id='SB-frame' style={{width: `${this.props.width}px`}} >
-        SideBar
+      <div id='SB-frame' style={{
+        width: `${this.props.width}px`,
+        overflow: 'scroll',
+        whiteSpace:'nowrap',
+      }}>
         {fileList}
-        <div id='SB-resizer' 
+        <div id='SB-resizer'
           onMouseDown={this.handleMouseDown}
           style={{left: `${this.props.width - 4}px`}}
         ></div>

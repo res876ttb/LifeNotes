@@ -37,6 +37,7 @@ import {
 
 // ============================================
 // import css file
+import '../styles/SideBarElement.css';
 
 // ============================================
 // constants
@@ -94,8 +95,15 @@ class SideBarFolder extends React.Component {
 
   render() {
     return (
-      <div className='noSelect' style={{paddingLeft: '20px'}} onClick={this.handleClick}>
-        <div style={{fontWeight: 'bold'}} onContextMenu={this.handleRightClick}>
+      <div className='noSelect' onClick={this.handleClick}>
+        <div 
+          className='SideBarElement'
+          onContextMenu={this.handleRightClick}
+        >
+          {this.props.expendedDir.indexOf(this.props.directory.ppath + this.props.directory.name) === -1 ?
+            <i className="far fa-folder width-28 text-center"></i> :
+            <i className="far fa-folder-open width-28 text-center"></i>
+          }
           {this.props.directory.name}
           <Menu
             anchorReference={this.state.anchorReference}
@@ -149,7 +157,9 @@ class SideBarFolder extends React.Component {
             </DialogActions>
           </Dialog>
         </div>
-        {this.props.child}
+        <div style={{paddingLeft: '20px'}}>
+          {this.props.child}
+        </div>
       </div>
     );
   }

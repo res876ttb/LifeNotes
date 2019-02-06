@@ -89,7 +89,12 @@ class SideBarFile extends React.Component {
 
   render() {
     return (
-      <div onClick={this.handleClick} onContextMenu={this.handleRightClick}>
+      <div 
+        className='SideBarElement'
+        onClick={this.handleClick} 
+        onContextMenu={this.handleRightClick}
+      >
+        <i className="fas fa-file-alt width-28 text-center"></i>
         {this.props.note.title}
         <Menu
           anchorReference={this.state.anchorReference}

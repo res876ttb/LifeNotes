@@ -97,7 +97,7 @@ class EditorCore extends React.Component {
       editor: editor
     });
 
-    this.props.updateNoteArr(this.props.id, {modified: true, editor: editor});
+    this.props.updateNoteArr(this.props.id, {modified: false, editor: editor});
 
     setInterval(() => {
       if (this.state.editor.hasFocus()) {
@@ -113,7 +113,7 @@ class EditorCore extends React.Component {
   }
 
   componentWillUnmount() {
-    this.props.saveNote();
+    this.props.saveNote(this.props.id);
   }
 
   render() {

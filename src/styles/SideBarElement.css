@@ -1,0 +1,12 @@
+.SideBarElement {
+  border-radius: 3px;
+  height: 28px;
+  line-height: 28px;
+  transition: 150ms;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.SideBarElement:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}

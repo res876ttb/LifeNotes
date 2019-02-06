@@ -62,6 +62,7 @@ class Editor extends React.Component {
 
     this.handleNewEditor = this.handleNewEditor.bind(this);
     this.handleSaveNotes = this.handleSaveNotes.bind(this);
+    this.handleSaveNote = this.handleSaveNote.bind(this);
     this.handleCyclicSave = this.handleCyclicSave.bind(this);
     this.catchSaveHotkey = this.catchSaveHotkey.bind(this);
     this.handleUpdateNoteArr = this.handleUpdateNoteArr.bind(this);
@@ -121,7 +122,7 @@ class Editor extends React.Component {
             initValue={note.content} 
             id={noteid} key={noteid} 
             updateNoteArr={this.handleUpdateNoteArr} 
-            saveNote={this.handleSaveNotes}
+            saveNote={this.handleSaveNote}
             ppath={ppath}
             changeNoteSignal={this.handleChangeNoteSignal}
           />
@@ -138,7 +139,7 @@ class Editor extends React.Component {
             initValue={''} 
             id={id} key={id} 
             updateNoteArr={this.handleUpdateNoteArr} 
-            saveNote={this.handleSaveNotes} 
+            saveNote={this.handleSaveNote} 
             ppath={noteHeader.ppath}
             changeNoteSignal={this.handleChangeNoteSignal}
           />
@@ -178,6 +179,12 @@ class Editor extends React.Component {
     this.setState({
       noteArr: noteArr,
     });
+  }
+
+  handleSaveNote(id) {
+    updateNote(id, this.state.noteArr[id].editor.getValue(), this.props.noteIndex, newNoteIndex => {
+      this.props.dispatch(updateNoteIndex(newNoteIndex));
+    })
   }
 
   handleChangeNoteSignal(id) {

@@ -79,7 +79,22 @@ class EditorTabBarItem extends React.Component {
           onDrop={this.handleOnDrop}
           onDragLeave={this.handleDragLeave}
         >
-          {title}
+          <div style={{
+            display: 'inline-block',
+            lineHeight: '1rem',
+          }}>
+            <div style={{
+              position: 'relative',
+              top: '4px',
+              maxWidth: '180px',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              overflowX: 'hidden',
+              lineHeight: '1.2rem',
+            }}>
+              {title}
+            </div>
+          </div>
           <div className="ETBI-close" onClick={this.handleCloseEditor}>
             <div className={"ETBI-close-inner" + (active ? "" : " ETBI-close-inner-inactive")}>
               <i className="fas fa-times-circle"></i>
