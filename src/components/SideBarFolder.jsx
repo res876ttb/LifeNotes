@@ -157,9 +157,7 @@ class SideBarFolder extends React.Component {
             </DialogActions>
           </Dialog>
         </div>
-        <div style={{paddingLeft: '20px'}}>
-          {this.props.child}
-        </div>
+        {this.props.child}
       </div>
     );
   }
