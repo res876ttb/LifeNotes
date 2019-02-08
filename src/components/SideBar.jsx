@@ -68,6 +68,7 @@ class SideBar extends React.Component {
         width: `${this.props.width}px`,
         overflow: 'scroll',
         whiteSpace:'nowrap',
+        padding: '3px',
       }}>
         {fileList}
         <div id='SB-resizer'

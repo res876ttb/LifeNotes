@@ -48,7 +48,14 @@ const defaultNoteIndexingFile = {
   history: [], // max number of history should be within 200
   name: '/',
   ppath: '/',
-  notes: []
+  notes: [{
+    _id: '4',
+    ppath: '/',
+    title: 'Welcome to LifeNotes',
+    tags: ['Welcome', 'Example'],
+    lastModifiedTime: 1549357744188,
+    createdTime: 1549357744188,
+  }]
 };
 // record tags of all notes
 const defaultTagsIndexingFile = {
@@ -125,7 +132,7 @@ function createTagIndexingFile(callback) {
 
 /**
  * @private @func createSettingFile
- * @desc Create the file which stores the user setting. ID of this file is "4"
+ * @desc Create the file which stores the user setting. ID of this file is "3"
  * @param {func} callback This function will be called after creating finishes
  * @returns {null}
  */
@@ -152,7 +159,7 @@ function createSettingFile(callback) {
 
 /**
  * @private @func createTutorialNote
- * @desc Create the tutorial note. ID of tutorial note is "3"
+ * @desc Create the tutorial note. ID of tutorial note is "4"
  * @param {func} callback This function will be called after creating finishes
  * @returns {null}
  */
@@ -502,6 +509,40 @@ export function updateTitle(newTitle, ppath, noteid, noteIndex, callback) {
       }
     }
   });
+}
+
+/**
+ * @public @func moveNote
+ * @desc Move a note from source directory to dest directory
+ * @param {string} id ID of the moved note
+ * @param {string} srcDir ppath of the moved note
+ * @param {string} destDir Path of the dest directory
+ * @param {object} noteIndex The noteindex file
+ * @param {func} callback Param: (ifUpdate, newNoteIndex)
+ * @returns {null}
+ */
+export function moveNote(id, srcDir, destDir, noteIndex, callback) {
+  if (srcDir === destDir) {
+    console.log(`Note ${id} is moved within the same directory--${srcDir} and ${destDir}. Operation is canceled.`);
+    callback(false, null);
+  } else {
+    findDir(srcDir.split('/'), 1, noteIndex, srcD => {
+      findDir(destDir.split('/'), 1, noteIndex, destD => {
+        for (let i in srcD.notes) {
+          if (srcD.notes[i]._id === id) {
+            srcD.notes[i].ppath = destDir;
+            if (srcD.notes[i].ppath[srcD.notes[i].ppath.length - 1] !== '/') {
+              srcD.notes[i].ppath += '/';
+            }
+            destD.notes.push(srcD.notes[i]);
+            srcD.notes.splice(i, 1);
+            callback(true, noteIndex);
+            return;
+          }
+        }
+      })
+    })
+  }
 }
 
 /**

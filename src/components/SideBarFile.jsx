@@ -64,6 +64,8 @@ class SideBarFile extends React.Component {
     this.handleDialogEnterKey = this.handleDialogEnterKey.bind(this);
     this.handleDialogContentChange = this.handleDialogContentChange.bind(this);
 
+    this.handleDragStart = this.handleDragStart.bind(this);
+
     this.state = {
       anchorEl: null,
       anchorReference: 'anchorEl', // anchorEl, anchorPosition
@@ -93,6 +95,8 @@ class SideBarFile extends React.Component {
         className='SideBarElement'
         onClick={this.handleClick} 
         onContextMenu={this.handleRightClick}
+        draggable={true}
+        onDragStart={this.handleDragStart}
       >
         <i className="fas fa-file-alt width-28 text-center"></i>
         {this.props.note.title}
@@ -148,6 +152,12 @@ class SideBarFile extends React.Component {
         </Dialog>
       </div>
     );
+  }
+
+  handleDragStart(e) {
+    e.dataTransfer.setData('type', 'note');
+    e.dataTransfer.setData('id', this.props.note._id);
+    e.dataTransfer.setData('ppath', this.props.note.ppath);
   }
 
   handleNewNote(e) {
