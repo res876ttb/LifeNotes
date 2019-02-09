@@ -34,6 +34,7 @@ import {
   newDirectory,
   deleteNote,
   moveNote,
+  moveDirectory
 } from '../utils/storage.js';
 
 // ============================================
@@ -165,6 +166,7 @@ class SideBarFile extends React.Component {
   }
 
   handleDrop(e) {
+    e.stopPropagation();
     let id = e.dataTransfer.getData('id');
     let ppath = e.dataTransfer.getData('ppath');
     let type = e.dataTransfer.getData('type');
@@ -179,7 +181,14 @@ class SideBarFile extends React.Component {
           }
         });
       } else if (type === 'dir') {
-
+        moveDirectory(id, ppath, this.props.note.ppath, this.props.noteIndex, (result, newNoteIndex) => {
+          if (result) {
+            console.log('Directory is moved successfully!');
+            this.props.dispatch(updateNoteIndex(newNoteIndex));
+          } else {
+            console.log('Directory is not moved.');
+          }
+        })
       }
     } else {
       console.error('Something goes wrong! type, id or ppath is null.');

@@ -517,7 +517,7 @@ export function updateTitle(newTitle, ppath, noteid, noteIndex, callback) {
  * @param {string} id ID of the moved note
  * @param {string} srcDir ppath of the moved note
  * @param {string} destDir Path of the dest directory
- * @param {object} noteIndex The noteindex file
+ * @param {object} noteIndex The noteIndex file
  * @param {func} callback Param: (ifUpdate, newNoteIndex)
  * @returns {null}
  */
@@ -536,6 +536,41 @@ export function moveNote(id, srcDir, destDir, noteIndex, callback) {
             }
             destD.notes.push(srcD.notes[i]);
             srcD.notes.splice(i, 1);
+            callback(true, noteIndex);
+            return;
+          }
+        }
+      })
+    })
+  }
+}
+
+/**
+ * @public @func moveDirectory
+ * @desc Move a directory from source directory to dest directory
+ * @param {string} name Namd of the moved directory
+ * @param {string} srcDir ppath of the moved note
+ * @param {string} destDir Path of the dest directory
+ * @param {object} noteIndex The noteIndex file
+ * @param {func} callback Param: (ifUpdate, newNoteIndex)
+ * @returns {null}
+ */
+export function moveDirectory(name, srcDir, destDir, noteIndex, callback) {
+  let re = RegExp(`^${srcDir + name}`);
+  if (srcDir === destDir) {
+    console.log(`Directory ${name} is moved within the same directory--${srcDir} and ${destDir}. Operation is canceled.`);
+    callback(false, null);
+  } else if ((destDir).match(re) !== null) {
+    console.log(`Directory ${destDir} belongs to directory ${srcDir}. Operation is canceled.`);
+    callback(false, null);
+  } else {
+    findDir(srcDir.split('/'), 1, noteIndex, srcD => {
+      findDir(destDir.split('/'), 1, noteIndex, destD => {
+        for (let i in srcD.directories) {
+          if (srcD.directories[i].name === name) {
+            srcD.directories[i].ppath = destDir;
+            destD.directories.push(srcD.directories[i]);
+            srcD.directories.splice(i, 1);
             callback(true, noteIndex);
             return;
           }

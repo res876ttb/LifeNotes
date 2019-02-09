@@ -34,6 +34,7 @@ import {
   deleteDirectory,
   renameDirectory,
   moveNote,
+  moveDirectory,
 } from '../utils/storage.js';
 
 // ============================================
@@ -69,7 +70,9 @@ class SideBarFolder extends React.Component {
     this.handleDialogClose = this.handleDialogClose.bind(this);
     this.handleDialogEnterKey = this.handleDialogEnterKey.bind(this);
     this.handleDialogContentChange = this.handleDialogContentChange.bind(this);
+
     this.handleDrop = this.handleDrop.bind(this);
+    this.handleDragStart = this.handleDragStart.bind(this);
 
     this.state = {
       anchorEl: null,
@@ -106,6 +109,8 @@ class SideBarFolder extends React.Component {
         <div 
           className='SideBarElement'
           onContextMenu={this.handleRightClick}
+          draggable={true}
+          onDragStart={this.handleDragStart}
         >
           {this.props.expendedDir.indexOf(this.props.directory.ppath + this.props.directory.name) === -1 ?
             <i className="far fa-folder width-28 text-center"></i> :
@@ -169,13 +174,20 @@ class SideBarFolder extends React.Component {
     );
   }
 
+  handleDragStart(e) {
+    e.dataTransfer.setData('type', 'dir');
+    e.dataTransfer.setData('id', this.props.directory.name);
+    e.dataTransfer.setData('ppath', this.props.directory.ppath);
+  }
+
   handleDrop(e) {
+    e.stopPropagation();
     let id = e.dataTransfer.getData('id');
     let ppath = e.dataTransfer.getData('ppath');
     let type = e.dataTransfer.getData('type');
     if (type && id && ppath) {
       if (type === 'note') {
-        moveNote(id, ppath, this.props.directory.ppath + this.props.directory.name, this.props.noteIndex, (result, newNoteIndex) => {
+        moveNote(id, ppath, this.props.directory.ppath + this.props.directory.name + '/', this.props.noteIndex, (result, newNoteIndex) => {
           if (result) {
             console.log('Note is moved successfully!');
             this.props.dispatch(updateNoteIndex(newNoteIndex));
@@ -184,7 +196,14 @@ class SideBarFolder extends React.Component {
           }
         });
       } else if (type === 'dir') {
-
+        moveDirectory(id, ppath, this.props.directory.ppath + this.props.directory.name + '/', this.props.noteIndex, (result, newNoteIndex) => {
+          if (result) {
+            console.log('Directory is moved successfully!');
+            this.props.dispatch(updateNoteIndex(newNoteIndex));
+          } else {
+            console.log('Directory is not moved.');
+          }
+        })
       }
     } else {
       console.error('Something goes wrong! type, id or ppath is null.');
