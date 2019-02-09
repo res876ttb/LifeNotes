@@ -743,20 +743,18 @@ function genNotes(dirpath, noteIndex, ind, callback) {
 /*
 function list: 
   initDB,
-  newShelf,
-  deleteShelf,
-  newNotebook,
-  deleteNotebook,
-  newNote,
-  updateNote,
-  deleteNote,
-  getAllNotes,
-  getAllNotebooks,
-  getAllShelf,
-  getShelfTree,
-  getAllNotebookidOfShelf,
-  getAllNoteidOfNotebook,
-  getAllNotebookOfShelf,
-  getAllNoteOfNotebook,
+  newDirectory,
+  renameDirectory
+  deleteDirectory
+  newNote
+  updateNote
+  updateTitle
+  moveNote
+  moveDirectory
+  deleteNote
+  getNote
+  removeNoteFromDirectory
+  getAllNotes
+  updateNoteIndexFile
   cleanDB
  */
