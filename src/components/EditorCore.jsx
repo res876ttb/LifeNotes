@@ -85,7 +85,7 @@ class EditorCore extends React.Component {
         flowchart: true,
         mermaid: true,
       },
-      tabSize: 2,
+      tabSize: 2, // TODO: User configurable
     });
     editor.setSize(null, "100%");
     editor.setValue(this.props.initValue);

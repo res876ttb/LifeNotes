@@ -33,6 +33,7 @@ import {
   newNote,
   newDirectory,
   deleteNote,
+  moveNote,
 } from '../utils/storage.js';
 
 // ============================================
@@ -65,6 +66,7 @@ class SideBarFile extends React.Component {
     this.handleDialogContentChange = this.handleDialogContentChange.bind(this);
 
     this.handleDragStart = this.handleDragStart.bind(this);
+    this.handleDrop = this.handleDrop.bind(this);
 
     this.state = {
       anchorEl: null,
@@ -97,6 +99,8 @@ class SideBarFile extends React.Component {
         onContextMenu={this.handleRightClick}
         draggable={true}
         onDragStart={this.handleDragStart}
+        onDragOver={e => {e.preventDefault();}}
+        onDrop={this.handleDrop}
       >
         <i className="fas fa-file-alt width-28 text-center"></i>
         {this.props.note.title}
@@ -158,6 +162,28 @@ class SideBarFile extends React.Component {
     e.dataTransfer.setData('type', 'note');
     e.dataTransfer.setData('id', this.props.note._id);
     e.dataTransfer.setData('ppath', this.props.note.ppath);
+  }
+
+  handleDrop(e) {
+    let id = e.dataTransfer.getData('id');
+    let ppath = e.dataTransfer.getData('ppath');
+    let type = e.dataTransfer.getData('type');
+    if (type && id && ppath) {
+      if (type === 'note') {
+        moveNote(id, ppath, this.props.note.ppath, this.props.noteIndex, (result, newNoteIndex) => {
+          if (result) {
+            console.log('Note is moved successfully!');
+            this.props.dispatch(updateNoteIndex(newNoteIndex));
+          } else {
+            console.log('Note is not moved.');
+          }
+        });
+      } else if (type === 'dir') {
+
+      }
+    } else {
+      console.error('Something goes wrong! type, id or ppath is null.');
+    }
   }
 
   handleNewNote(e) {
