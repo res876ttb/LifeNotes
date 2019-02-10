@@ -315,6 +315,20 @@ function _deleteDirectory(dir, noteIndex, callback) {
   callback(allNotes);
 }
 
+/**
+ * @private @func formatDirpath
+ * @desc Format dirpath variable such that the last char of dirpath always is '/'
+ * @param {string} dirpath
+ * @returns {string} newDirPath
+ */
+function formatDirpath(dirpath) {
+  if (dirpath[dirpath.length - 1] === '/') {
+    return dirpath;
+  } else {
+    return dirpath + '/';
+  }
+}
+
 // ===================================================================================
 // public function
 
@@ -369,11 +383,11 @@ export function newDirectory(dirpath, name, noteIndex, callback) {
   findDir(dirpath.split('/'), 1, noteIndex, dir => {
     let newDir = {
       name: name,
-      ppath: dirpath + '/',
+      ppath: formatDirpath(dirpath),
       directories: [],
       notes: []
     };
-    findDir((dirpath + '/' + name).split('/'), 1, noteIndex, nonexistent => {
+    findDir((formatDirpath(dirpath) + name).split('/'), 1, noteIndex, nonexistent => {
       if (nonexistent !== false) {
         console.error(`Folder ${dir.ppath + name} has existed! Please use another name for this folder.`)
       } else {

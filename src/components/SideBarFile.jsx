@@ -6,9 +6,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -286,6 +286,7 @@ class SideBarFile extends React.Component {
 
   handleRightClick(e) {
     e.preventDefault();
+    e.stopPropagation();
     let mousePosition = {
       x: e.clientX,
       y: e.clientY,
