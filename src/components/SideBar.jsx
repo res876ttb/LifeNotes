@@ -291,7 +291,7 @@ class SideBar extends React.Component {
   handleDialogClose(e) {
     console.log('Dialog Close is fired');
     if (e) e.stopPropagation();
-    this.setState({dialogOpen: false});
+    this.setState({dialogOpen: false, dialogContent: ''});
   }
 
   handleNewFolder(e) {
