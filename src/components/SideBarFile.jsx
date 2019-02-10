@@ -170,6 +170,9 @@ class SideBarFile extends React.Component {
     let id = e.dataTransfer.getData('id');
     let ppath = e.dataTransfer.getData('ppath');
     let type = e.dataTransfer.getData('type');
+    e.dataTransfer.setData('id', null);
+    e.dataTransfer.setData('ppath', null);
+    e.dataTransfer.setData('type', null);
     if (type && id && ppath) {
       if (type === 'note') {
         moveNote(id, ppath, this.props.note.ppath, this.props.noteIndex, (result, newNoteIndex) => {

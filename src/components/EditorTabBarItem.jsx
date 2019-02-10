@@ -118,8 +118,8 @@ class EditorTabBarItem extends React.Component {
   }
 
   handleDragStart(e) {
-    e.dataTransfer.effectAllowed = 'copy'; // only dropEffect='copy' will be dropable
-    e.dataTransfer.setData('Text', this.id); // required otherwise doesn't work
+    // e.dataTransfer.effectAllowed = 'copy'; // only dropEffect='copy' will be dropable
+    e.dataTransfer.setData('tabid', this.props.id); // required otherwise doesn't work
     this.props.setDrag(this.props.id);
   }
 
@@ -132,11 +132,15 @@ class EditorTabBarItem extends React.Component {
     } 
   }
 
-  handleOnDrop() {
-    this.props.setDrop(this.props.id);
-    this.setState({
-      dragOver: false,
-    });
+  handleOnDrop(e) {
+    let tabid = e.dataTransfer.getData('tabid');
+    if (tabid) {
+      e.dataTransfer.setData('tabid', null);
+      this.props.setDrop(this.props.id);
+      this.setState({
+        dragOver: false,
+      });
+    }
   }
 
   handleDragLeave() {
