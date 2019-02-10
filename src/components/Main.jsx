@@ -31,6 +31,9 @@ import {
 import { 
   printc 
 } from '../utils/output';
+import { 
+  runGoogleDriveAPITest 
+} from '../utils/googleDrive';
 
 // ============================================
 // import css file
@@ -78,6 +81,12 @@ class Main extends React.Component {
         console.log(noteIndex);
       });
     }
+  }
+
+  componentDidMount() {
+    runGoogleDriveAPITest(() => {
+      console.log('API testing done.');
+    });
   }
 
   render() {
