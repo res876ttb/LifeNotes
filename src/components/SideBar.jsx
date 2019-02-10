@@ -70,7 +70,7 @@ class SideBar extends React.Component {
         {fileList}
         <div id='SB-resizer'
           onMouseDown={this.handleMouseDown}
-          style={{left: `${this.props.width + 2}px`}}
+          style={{left: `${this.props.width + 5}px`}}
         ></div>
       </div>
     );

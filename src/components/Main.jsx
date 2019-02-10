@@ -112,10 +112,11 @@ class Main extends React.Component {
       let maxW = window.innerWidth - 420;
       if (maxW > 500) maxW = 500;
       if (maxW > window.innerWidth / 2) maxW = window.innerWidth / 2;
-
-      if (e.pageX >= 180 && e.pageX < maxW) {
-        this.props.dispatch(setSideBarWidth(e.pageX));
-      } else if (e.pageX > maxW) {
+      
+      let x = e.pageX - 6;
+      if (x >= 180 && x < maxW) {
+        this.props.dispatch(setSideBarWidth(x));
+      } else if (x > maxW) {
         this.props.dispatch(setSideBarWidth(maxW));
       } else {
         this.props.dispatch(setSideBarWidth(180));
