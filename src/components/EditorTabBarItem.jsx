@@ -118,8 +118,7 @@ class EditorTabBarItem extends React.Component {
   }
 
   handleDragStart(e) {
-    // e.dataTransfer.effectAllowed = 'copy'; // only dropEffect='copy' will be dropable
-    e.dataTransfer.setData('tabid', this.props.id); // required otherwise doesn't work
+    e.dataTransfer.setData('tabid', this.props.id);
     this.props.setDrag(this.props.id);
   }
 

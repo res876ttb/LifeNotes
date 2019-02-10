@@ -14,10 +14,19 @@ import SideBarFile from './SideBarFile.jsx';
 
 // ============================================
 // import react redux-action
+import {
+  updateNoteIndex,
+} from '../states/mainState.js';
 
 // ============================================
 // import apis
-import {getNewID} from '../utils/id.js';
+import {
+  getNewID
+} from '../utils/id.js';
+import {
+  moveDirectory,
+  moveNote,
+} from '../utils/storage.js';
 
 // ============================================
 // import css file
@@ -46,6 +55,8 @@ class SideBar extends React.Component {
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.folderToggler = this.folderToggler.bind(this);
 
+    this.handleDrop = this.handleDrop.bind(this);
+
     this.state = {
       expendedDir: ['//'],
       showall: false,
@@ -64,9 +75,12 @@ class SideBar extends React.Component {
     }
 
     return (
-      <div id='SB-frame' style={{
-        width: `${this.props.width}px`,
-      }}>
+      <div 
+        id='SB-frame' 
+        style={{width: `${this.props.width}px`,}}
+        onDragOver={e => e.preventDefault()}
+        onDrop={this.handleDrop}
+      >
         {fileList}
         <div id='SB-resizer'
           onMouseDown={this.handleMouseDown}
@@ -139,8 +153,42 @@ class SideBar extends React.Component {
     e.preventDefault();
     e.stopPropagation();
   }
+
+  handleDrop(e) {
+    e.stopPropagation();
+    let id = e.dataTransfer.getData('id');
+    let ppath = e.dataTransfer.getData('ppath');
+    let type = e.dataTransfer.getData('type');
+    e.dataTransfer.setData('id', null);
+    e.dataTransfer.setData('ppath', null);
+    e.dataTransfer.setData('type', null);
+    if (type && id && ppath) {
+      if (type === 'note') {
+        moveNote(id, ppath, '/', this.props.noteIndex, (result, newNoteIndex) => {
+          if (result) {
+            console.log('Note is moved successfully!');
+            this.props.dispatch(updateNoteIndex(newNoteIndex));
+          } else {
+            console.log('Note is not moved.');
+          }
+        });
+      } else if (type === 'dir') {
+        moveDirectory(id, ppath, '/', this.props.noteIndex, (result, newNoteIndex) => {
+          if (result) {
+            console.log('Directory is moved successfully!');
+            this.props.dispatch(updateNoteIndex(newNoteIndex));
+          } else {
+            console.log('Directory is not moved.');
+          }
+        })
+      }
+    } else {
+      console.error('Something goes wrong! type, id or ppath is null.');
+    }
+  }
 }
 
 export default connect (state => ({
   width: state.main.sideBarWidth,
+  noteIndex: state.main.noteIndex,
 }))(SideBar);

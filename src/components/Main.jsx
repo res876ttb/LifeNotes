@@ -97,7 +97,7 @@ class Main extends React.Component {
         onMouseMove={this.handleMouseMove}
         style={{cursor: this.state.mouseDown ? 'col-resize' : 'auto'}}
       >
-        <SideBar mouseDown={this.handleMouseDown} noteIndex={this.props.noteIndex} tagIndex={this.state.tagIndex}/>
+        <SideBar mouseDown={this.handleMouseDown} />
         <Editor showTabBar={true} showToolBar={true} />
         {/* <EditorCore showToolBar={false} showTabBar={false}/> */}
       </div>
