@@ -4,6 +4,8 @@
   line-height: 28px;
   transition: 150ms;
   background-color: rgba(0, 0, 0, 0);
+  min-width: max-content;
+  max-width: 100%;
 }
 
 .SideBarElement:hover {

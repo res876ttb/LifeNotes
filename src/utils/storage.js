@@ -53,18 +53,18 @@ const defaultNoteIndexingFile = {
     ppath: '/',
     title: 'Welcome to LifeNotes',
     tags: ['Welcome', 'Example'],
-    lastModifiedTime: 1549357744188,
-    createdTime: 1549357744188,
+    lastModifiedTime: welcomeNotesCreateTime,
+    createdTime: welcomeNotesCreateTime,
   }]
 };
 // record tags of all notes
 const defaultTagsIndexingFile = {
   tags: [{
     name: 'Welcome', 
-    notes: [welcomeNotesId]
+    notes: ['4']
   }, {
     name: 'Example', 
-    notes: [welcomeNotesId]
+    notes: ['4']
   }],
   history: [], // max number of history should be within 200
 };

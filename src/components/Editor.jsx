@@ -94,7 +94,7 @@ class Editor extends React.Component {
         keyName='command+s,ctrl+s'
         onKeyDown={this.catchSaveHotkey}
       >
-        <div id='Editor-frame' style={{left: `${this.props.sideBarWidth}px`, height: '100%'}}>
+        <div id='Editor-frame' style={{left: `${this.props.sideBarWidth + 6}px`, height: '100%'}}>
           {editorArrSize === 0 ? (
             <div id='Editor-empty-outer'>
               <div id='Editor-empty-middle'>

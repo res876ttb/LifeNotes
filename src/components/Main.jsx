@@ -68,18 +68,7 @@ class Main extends React.Component {
       initDB((noteIndex, tagIndex) => {
         cleanDB(() => {
           initDB((noteIndex, tagIndex) => {
-            // this.setState({
-            //   noteIndex: noteIndex,
-            //   tagIndex: tagIndex
-            // });
             this.props.dispatch(updateNoteIndex(noteIndex));
-            runTest(noteIndex, tagIndex, (newNoteIndex) => {
-              // this.setState({
-              //   noteIndex: {...newNoteIndex}
-              // });
-              this.props.dispatch(updateNoteIndex(newNoteIndex));
-              console.log(newNoteIndex);
-            });
           });
         });
       });

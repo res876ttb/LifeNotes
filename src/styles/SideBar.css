@@ -1,8 +1,13 @@
 #SB-frame {
   height: 100%;
   overflow: scroll;
-  outline: 2px blueviolet solid;
+  box-shadow: 3px 0px 5px 0px rgba(0,0,0,0.3);
   position: fixed;
+  z-index: 1;
+  background-color: rgb(235,235,235);
+  overflow: scroll;
+  white-space: nowrap;
+  padding: 3px;
 }
 
 #SB-resizer {
