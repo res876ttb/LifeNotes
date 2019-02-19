@@ -222,21 +222,12 @@ class SideBar extends React.Component {
         />
       );
     }
-    if (level === 0) {
-      return (
-        <div>
-          {dirList}
-          {noteList}
-        </div>
-      )
-    } else {
-      return (
-        <div style={{paddingLeft: '20px'}}>
-          {dirList}
-          {noteList}
-        </div>
-      )
-    }
+    return (
+      <div style={{paddingLeft: level === 0 ? '0px' : '20px'}}>
+        {dirList}
+        {noteList}
+      </div>
+    )
   }
 
   handleMouseDown(e) {
