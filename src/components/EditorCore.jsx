@@ -24,6 +24,9 @@ import {
 import { 
   updateTitle,
 } from '../utils/storage.js';
+import {
+  init_math_preview
+} from '../utils/mathPrevies.js';
 
 // ============================================
 // import css file
@@ -90,6 +93,8 @@ class EditorCore extends React.Component {
     });
     editor.setSize(null, "100%");
     editor.setValue(this.props.initValue);
+
+    init_math_preview(editor);
     
     this.setState({
       // detect os version
