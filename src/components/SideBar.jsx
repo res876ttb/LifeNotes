@@ -202,18 +202,21 @@ class SideBar extends React.Component {
     }
     let dirList = [];
     let noteList = [];
-    let sortedDirectory = directory.directories.sort((a, b) => {
+
+    // sort directories and notes
+    directory.directories.sort((a, b) => {
       return a.name.localeCompare(b.name);
     });
-    let sortedNotes = directory.notes.sort((a, b) => {
+    directory.notes.sort((a, b) => {
       return a.title.localeCompare(b.title);
     });
-    for (let d in sortedDirectory) {
+
+    for (let d in directory.directories) {
       dirList.push(
         <SideBarFolder 
-          directory={sortedDirectory[d]} 
+          directory={directory.directories[d]} 
           level={level} 
-          child={this.getTreeComponents(sortedDirectory[d], level + 1)}
+          child={this.getTreeComponents(directory.directories[d], level + 1)}
           toggler={this.folderToggler}
           expendedDir={this.state.expendedDir}
           key={getNewID()}
