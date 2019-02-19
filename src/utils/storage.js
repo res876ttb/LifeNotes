@@ -426,7 +426,7 @@ export function newDirectory(dirpath, name, noteIndex, callback) {
         console.error(`Folder ${dir.ppath + name} has existed! Please use another name for this folder.`)
       } else {
         dir.directories.push(newDir);
-        callback(noteIndex);
+        sortDirectory(formatDirpath(dirpath), noteIndex, callback);
       }
     })
   });
