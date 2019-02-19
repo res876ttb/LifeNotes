@@ -94,7 +94,7 @@ class EditorCore extends React.Component {
     editor.setSize(null, "100%");
     editor.setValue(this.props.initValue);
 
-    init_math_preview(editor);
+    init_math_preview(editor, this.props.id);
     
     this.setState({
       // detect os version
@@ -134,6 +134,15 @@ class EditorCore extends React.Component {
         <div className='EditorCore-HMD-wrapper'>
           <textarea id={'EditorCore-frame' + this.props.id} onKeyDown={this.handleKeyDown}></textarea>
         </div>
+
+        <div id={"math-preview-" + this.props.id} className="float-win float-win-hidden">
+          <div className="float-win-title">
+            <button className="float-win-close"><i className="fas fa-times"></i></button>
+            Math Preview
+          </div>
+          <div className="float-win-content" id={"math-preview-content-" + this.props.id}></div>
+        </div>
+
       </div>
     );
   }

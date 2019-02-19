@@ -43,6 +43,7 @@ html, body {
   overflow: hidden;
   box-shadow: 0 3px 7px rgba(0,0,0,0.3);
   max-width: 70%;
+  opacity: 0.8;
 }
 
 .float-win-hidden {

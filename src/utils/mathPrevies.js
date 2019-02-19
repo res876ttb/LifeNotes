@@ -4,9 +4,9 @@
 
 import {FloatWin} from './floatWindow.js';
 
-export function init_math_preview(cm) {
+export function init_math_preview(cm, id) {
   var mathRenderer = null
-  var win = new FloatWin("math-preview")
+  var win = new FloatWin("math-preview-" + id)
   var supressed = false
 
   win.closeBtn.addEventListener("click", function(){
@@ -19,7 +19,7 @@ export function init_math_preview(cm) {
 
     if (!mathRenderer) { // initialize renderer and preview window
       mathRenderer = cm.hmd.FoldMath.createRenderer(
-        document.getElementById("math-preview-content"),
+        document.getElementById("math-preview-content-" + id),
         "display"
       )
       mathRenderer.onChanged = function () {
