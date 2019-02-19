@@ -32,6 +32,7 @@ import '../styles/hyperMD.css';
 
 // ============================================
 // constants
+const HyperMD = require('hypermd');
 
 // ============================================
 // react components
@@ -132,7 +133,7 @@ class EditorCore extends React.Component {
     );
   }
 
-  updateTitle() {
+  updateTitle() { // TODO: use editor.debounce to improve performance
     let title = this.state.editor.getLine(0);
     if (title.match(/^#{1,6}[\t\ ]+[\S\ \t]+/)) {
       title = title.replace(/^#{1,6}[\t\ ]+/, '');
