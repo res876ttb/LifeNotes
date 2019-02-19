@@ -54,7 +54,7 @@ window.onload = function() {
 };
 
 // load hypermd
-// Does anyone has a better method @@
+// Does anyone have a better method @@
 require('codemirror/lib/codemirror');
 require('hypermd/core');
 require('hypermd/mode/hypermd');

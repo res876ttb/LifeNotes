@@ -329,6 +329,40 @@ function formatDirpath(dirpath) {
   }
 }
 
+/**
+ * @private @func sortDirectory
+ * @desc Sort all directories under a directory
+ * @param {string} ppath
+ * @param {object} noteIndex
+ * @param {func} callback
+ * @returns null
+ */
+function sortDirectory(ppath, noteIndex, callback) {
+  findDir(ppath.split('/'), 1, noteIndex, dir => {
+    dir.directories.sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
+    callback(noteIndex);
+  })
+}
+
+/**
+ * @private @func sortNotes
+ * @desc Sort all notes under a directory
+ * @param {string} ppath
+ * @param {object} noteIndex
+ * @param {func} callback
+ * @returns null
+ */
+function sortNotes(ppath, noteIndex, callback) {
+  findDir(ppath.split('/'), 1, noteIndex, dir => {
+    dir.notes.sort((a, b) => {
+      return a.title.localeCompare(b.title);
+    });
+    callback(noteIndex);
+  })
+}
+
 // ===================================================================================
 // public function
 
@@ -410,7 +444,13 @@ export function newDirectory(dirpath, name, noteIndex, callback) {
 export function renameDirectory(dirpath, name, noteIndex, callback) {
   findDir(dirpath.split('/'), 1, noteIndex, dir => {
     dir.name = name;
-    callback(noteIndex);
+
+    let d = dirpath.split('/');
+    d.pop();
+    console.log(d.join('/'));
+    d = d.join('/');
+    if (d === '') d = '/';
+    sortDirectory(d, noteIndex, callback);
   })
 }
 
@@ -467,7 +507,9 @@ export function newNote(dirpath, noteIndex, callback) {
         };
         dir.notes.push(noteHeader);
         printc('A new note is created successfully');
-        callback(noteIndex, noteHeader, note);
+        sortNotes(dirpath, noteIndex, newNoteIndex => {
+          callback(newNoteIndex, noteHeader, note);
+        });
       });
     });
   }).catch(err => {
@@ -518,7 +560,7 @@ export function updateTitle(newTitle, ppath, noteid, noteIndex, callback) {
     for (let i in dir.notes) {
       if (dir.notes[i]._id === noteid) {
         dir.notes[i].title = newTitle;
-        callback(noteIndex);
+        sortNotes(ppath, noteIndex, callback);
         break;
       }
     }
@@ -550,7 +592,9 @@ export function moveNote(id, srcDir, destDir, noteIndex, callback) {
             }
             destD.notes.push(srcD.notes[i]);
             srcD.notes.splice(i, 1);
-            callback(true, noteIndex);
+            sortNotes(destDir, noteIndex, newNoteIndex => {
+              callback(true, newNoteIndex);
+            });
             return;
           }
         }
@@ -585,7 +629,9 @@ export function moveDirectory(name, srcDir, destDir, noteIndex, callback) {
             srcD.directories[i].ppath = destDir;
             destD.directories.push(srcD.directories[i]);
             srcD.directories.splice(i, 1);
-            callback(true, noteIndex);
+            sortDirectory(destDir, noteIndex, newNoteIndex => {
+              callback(true, newNoteIndex);
+            });
             return;
           }
         }

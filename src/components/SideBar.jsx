@@ -203,14 +203,6 @@ class SideBar extends React.Component {
     let dirList = [];
     let noteList = [];
 
-    // sort directories and notes
-    directory.directories.sort((a, b) => {
-      return a.name.localeCompare(b.name);
-    });
-    directory.notes.sort((a, b) => {
-      return a.title.localeCompare(b.title);
-    });
-
     for (let d in directory.directories) {
       dirList.push(
         <SideBarFolder 
