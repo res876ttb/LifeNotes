@@ -62,6 +62,7 @@ class EditorCore extends React.Component {
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.updateTitle = this.updateTitle.bind(this);
+    this.parseTags = this.parseTags.bind(this);
 
     this.state = {
       mac: false,       // if current os is macOS
@@ -101,6 +102,12 @@ class EditorCore extends React.Component {
       this.updateTitle();
     }, 500);
     editor.on('change', updateTitle);
+
+    // parse tags when user change content
+    let parseTags = HyperMD.debounce(() => {
+      this.parseTags();
+    }, 500);
+    editor.on('change', parseTags);
     
     this.setState({
       // detect os version
@@ -163,6 +170,41 @@ class EditorCore extends React.Component {
         this.props.dispatch(updateNoteIndex(newNoteIndex));
       });
     }
+  }
+
+  parseTags() {
+    let tagsLine = ' ' + this.state.editor.getLine(1);
+    // regex with space
+    let regWS = /\W(\#([\w\/]|\\.)([\w\s\/]|\\.)+([\w\/]|\\.)\b\#)/g;
+    // regex without space
+    let reg = /\W(\#([\w\/]|\\.)+\b)/g;
+
+    // match hashtags with space
+    let tagsWS = tagsLine.match(regWS);
+
+    // remove match pattern
+    for (let i in tagsWS) {
+      tagsLine = tagsLine.replace(tagsWS[i], '');
+    }
+
+    // match hashtags without space
+    let tags = tagsLine.match(reg);
+
+    // concat tags
+    tags = tags.concat(tagsWS);
+
+    // remove unecessary characters
+    for (let i in tags) {
+      tags[i] = tags[i].slice(2);
+      tags[i] = tags[i].replace(/\\#/g, '´');
+      tags[i] = tags[i].replace(/#/g, '');
+      tags[i] = tags[i].replace(/\\/g, '');
+      tags[i] = tags[i].replace('´', '#');
+    }
+
+    // update tags
+    tags.sort();
+    console.log(tags);
   }
 
   handleClick() {
