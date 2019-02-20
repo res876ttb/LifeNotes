@@ -95,6 +95,12 @@ class EditorCore extends React.Component {
     editor.setValue(this.props.initValue);
 
     init_math_preview(editor, this.props.id);
+
+    // update title when user change content
+    let updateTitle = HyperMD.debounce(() => {
+      this.updateTitle();
+    }, 500);
+    editor.on('change', updateTitle);
     
     this.setState({
       // detect os version
@@ -104,14 +110,6 @@ class EditorCore extends React.Component {
     });
 
     this.props.updateNoteArr(this.props.id, {modified: false, editor: editor});
-
-    setInterval(() => {
-      if (this.state.editor.hasFocus()) {
-        if (this.props.id === this.props.activeEditorId) {
-          this.updateTitle();
-        } 
-      }  
-    }, 1000);
 
     setTimeout(() => {
       this.updateTitle();
@@ -147,7 +145,7 @@ class EditorCore extends React.Component {
     );
   }
 
-  updateTitle() { // TODO: use editor.debounce to improve performance
+  updateTitle() {
     let title = this.state.editor.getLine(0);
     if (title.match(/^#{1,6}[\t\ ]+[\S\ \t]+/)) {
       title = title.replace(/^#{1,6}[\t\ ]+/, '');
