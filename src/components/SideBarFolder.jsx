@@ -23,7 +23,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 // ============================================
 // import react redux-action
 import { 
-  updateNoteIndex
+  updateNoteIndex, updateDirectoryIndex
 } from '../states/mainState.js';
 
 // ============================================
@@ -190,19 +190,20 @@ class SideBarFolder extends React.Component {
     e.dataTransfer.setData('type', null);
     if (type && id && ppath) {
       if (type === 'note') {
-        moveNote(id, ppath, this.props.directory.ppath + this.props.directory.name + '/', this.props.noteIndex, (result, newNoteIndex) => {
+        moveNote(id, ppath, this.props.directory.ppath + this.props.directory.name + '/', this.props.noteIndex, this.props.directoryIndex, (result, newDirectoryIndex, newNoteIndex) => {
           if (result) {
             console.log('Note is moved successfully!');
+            this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
             this.props.dispatch(updateNoteIndex(newNoteIndex));
           } else {
             console.log('Note is not moved.');
           }
         });
       } else if (type === 'dir') {
-        moveDirectory(id, ppath, this.props.directory.ppath + this.props.directory.name + '/', this.props.noteIndex, (result, newNoteIndex) => {
+        moveDirectory(id, ppath, this.props.directory.ppath + this.props.directory.name + '/', this.props.directoryIndex, (result, newDirectoryIndex) => {
           if (result) {
             console.log('Directory is moved successfully!');
-            this.props.dispatch(updateNoteIndex(newNoteIndex));
+            this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
           } else {
             console.log('Directory is not moved.');
           }
@@ -215,7 +216,8 @@ class SideBarFolder extends React.Component {
 
   handleNewNote(e) {
     e.stopPropagation();
-    newNote(this.props.directory.ppath + this.props.directory.name, this.props.noteIndex, newNoteIndex => {
+    newNote(this.props.directory.ppath + this.props.directory.name, this.props.directoryIndex, this.props.noteIndex, (newDirectoryIndex, newNoteIndex) => {
+      this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
       this.props.dispatch(updateNoteIndex(newNoteIndex));
     });
     this.handleMenuClick(e);
@@ -231,8 +233,8 @@ class SideBarFolder extends React.Component {
       dialogCancel: 'Cancel',
       dialogConfirmAction: () => {
         console.log('Confirm');
-        newDirectory(this.props.directory.ppath + this.props.directory.name, this.state.dialogContent, this.props.noteIndex, newNoteIndex => {
-          this.props.dispatch(updateNoteIndex(newNoteIndex));
+        newDirectory(this.props.directory.ppath + this.props.directory.name, this.state.dialogContent, this.props.directoryIndex, newDirectoryIndex => {
+          this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
         });
         this.handleDialogClose();
       },
@@ -255,7 +257,8 @@ class SideBarFolder extends React.Component {
       dialogConfirm: 'Confirm',
       dialogCancel: 'Cancel',
       dialogConfirmAction: () => {
-        deleteDirectory(this.props.directory.ppath + this.props.directory.name, this.props.noteIndex, newNoteIndex => {
+        deleteDirectory(this.props.directory.ppath + this.props.directory.name, this.props.directoryIndex, this.props.noteIndex, (newDirectoryIndex, newNoteIndex) => {
+          this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
           this.props.dispatch(updateNoteIndex(newNoteIndex));
         });
         this.handleDialogClose();
@@ -278,8 +281,8 @@ class SideBarFolder extends React.Component {
       dialogConfirm: 'Confirm',
       dialogCancel: 'Cancel',
       dialogConfirmAction: () => {
-        renameDirectory(this.props.directory.ppath + this.props.directory.name, this.state.dialogContent, this.props.noteIndex, newNoteIndex => {
-          this.props.dispatch(updateNoteIndex(newNoteIndex));
+        renameDirectory(this.props.directory.ppath + this.props.directory.name, this.state.dialogContent, this.props.directoryIndex, newDirectoryIndex => {
+          this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
         });
         this.handleDialogClose();
       }, 
@@ -343,5 +346,7 @@ class SideBarFolder extends React.Component {
 }
 
 export default connect (state => ({
-  noteIndex: state.main.noteIndex
+  noteIndex: state.main.noteIndex,
+  directoryIndex: state.main.directoryIndex,
+  tagIndex: state.main.tagIndex,
 }))(SideBarFolder);

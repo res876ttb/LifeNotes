@@ -25,7 +25,8 @@ import SideBarFile from './SideBarFile.jsx';
 // ============================================
 // import react redux-action
 import {
-  updateNoteIndex,
+  updateNoteIndex, 
+  updateDirectoryIndex,
 } from '../states/mainState.js';
 
 // ============================================
@@ -56,6 +57,7 @@ class SideBar extends React.Component {
     mouseDown: PropTypes.func,
     noteIndex: PropTypes.object,
     tagIndex: PropTypes.object,
+    directoryIndex: PropTypes.object,
   }
 
   constructor(props) {
@@ -111,8 +113,8 @@ class SideBar extends React.Component {
 
   render() {
     let fileList = <div></div>
-    if (this.props.noteIndex != null) {
-      fileList = this.getTreeComponents(this.props.noteIndex, 0);
+    if (this.props.directoryIndex != null) {
+      fileList = this.getTreeComponents(this.props.directoryIndex, 0);
     }
 
     return (
@@ -218,7 +220,7 @@ class SideBar extends React.Component {
     for (let n in directory.notes) {
       noteList.push(
         <SideBarFile 
-          note={directory.notes[n]}
+          note={this.props.noteIndex[directory.notes[n]]}
           key={getNewID()}
         />
       );
@@ -262,7 +264,8 @@ class SideBar extends React.Component {
   
   handleNewNote(e) {
     e.stopPropagation();
-    newNote('/', this.props.noteIndex, newNoteIndex => {
+    newNote('/', this.props.directoryIndex, this.props.noteIndex, (newDirectoryIndex, newNoteIndex) => {
+      this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
       this.props.dispatch(updateNoteIndex(newNoteIndex));
     });
     this.handleMenuClick(e);
@@ -296,8 +299,8 @@ class SideBar extends React.Component {
       dialogCancel: 'Cancel',
       dialogConfirmAction: () => {
         console.log('Confirm');
-        newDirectory('/', this.state.dialogContent, this.props.noteIndex, newNoteIndex => {
-          this.props.dispatch(updateNoteIndex(newNoteIndex));
+        newDirectory('/', this.state.dialogContent, this.props.directoryIndex, newDirectoryIndex => {
+          this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
         });
         this.handleDialogClose();
       },
@@ -322,19 +325,20 @@ class SideBar extends React.Component {
     e.dataTransfer.setData('type', null);
     if (type && id && ppath) {
       if (type === 'note') {
-        moveNote(id, ppath, '/', this.props.noteIndex, (result, newNoteIndex) => {
+        moveNote(id, ppath, '/', this.props.noteIndex, this.props.directoryIndex, (result, newDirectoryIndex, newNoteIndex) => {
           if (result) {
             console.log('Note is moved successfully!');
+            this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
             this.props.dispatch(updateNoteIndex(newNoteIndex));
           } else {
             console.log('Note is not moved.');
           }
         });
       } else if (type === 'dir') {
-        moveDirectory(id, ppath, '/', this.props.noteIndex, (result, newNoteIndex) => {
+        moveDirectory(id, ppath, '/', this.props.directoryIndex, (result, newDirectoryIndex) => {
           if (result) {
             console.log('Directory is moved successfully!');
-            this.props.dispatch(updateNoteIndex(newNoteIndex));
+            this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
           } else {
             console.log('Directory is not moved.');
           }
@@ -349,4 +353,6 @@ class SideBar extends React.Component {
 export default connect (state => ({
   width: state.main.sideBarWidth,
   noteIndex: state.main.noteIndex,
+  tagIndex: state.main.tagIndex,
+  directoryIndex: state.main.directoryIndex,
 }))(SideBar);

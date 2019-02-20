@@ -38,7 +38,8 @@ const exampleDirectory = {
 };
 
 // record info of all notes
-const defaultNoteIndexingFile = {
+const defaultDirectoryIndexingFile = {
+  updateTime: welcomeNotesCreateTime,
   directories: [{
     name: 'Inbox',
     ppath: '/',
@@ -48,26 +49,47 @@ const defaultNoteIndexingFile = {
   history: [], // max number of history should be within 200
   name: '/',
   ppath: '/',
-  notes: [{
+  notes: [
+    '4',
+  ]
+
+  // >>> DEPRECATED <<<
+  // notes: [{
+  //   _id: '4',
+  //   ppath: '/',
+  //   title: 'Welcome to LifeNotes',
+  //   tags: ['Welcome', 'Example'],
+  //   lastModifiedTime: welcomeNotesCreateTime,
+  //   createdTime: welcomeNotesCreateTime,
+  // }]
+};
+
+// record tags of all notes
+const defaultTagsIndexingFile = {
+  updateTime: welcomeNotesCreateTime,
+  tags: [{
+    name: 'Welcome', 
+    notes: ['4'],
+    tags: [], // support for multi-level of tags
+  }, {
+    name: 'Example', 
+    notes: ['4'],
+    tags: [],
+  }],
+  history: [], // max number of history should be within 200
+};
+
+// record header of all notes
+const defaultNoteIndexingFile = {
+  '4': {
     _id: '4',
     ppath: '/',
     title: 'Welcome to LifeNotes',
     tags: ['Welcome', 'Example'],
     lastModifiedTime: welcomeNotesCreateTime,
     createdTime: welcomeNotesCreateTime,
-  }]
-};
-// record tags of all notes
-const defaultTagsIndexingFile = {
-  tags: [{
-    name: 'Welcome', 
-    notes: ['4']
-  }, {
-    name: 'Example', 
-    notes: ['4']
-  }],
-  history: [], // max number of history should be within 200
-};
+  }
+}
 
 // ===================================================================================
 // global variable
@@ -75,6 +97,33 @@ var db;
 
 // ===================================================================================
 // private function
+
+/**
+ * @private @func createDirectoryIndexingFile
+ * @desc A sub-function of initialization. ID of the directory indexing file is '0'
+ * @param {string} callback
+ * @returns {null}
+ */
+function createDirectoryIndexingFile(callback) {
+  db.find({
+    selector: {$and: [
+      {'_id': {$eq: '0'}}
+    ]}
+  }).then(result => {
+    if (result.docs.length == 0) {
+      db.put({
+        _id: '0',
+        content: defaultDirectoryIndexingFile,
+      }).then(result => {
+        printc('Directory-indexing file is created');
+        callback();
+      });
+    } else {
+      printc('Note-indexing file has been created');
+      callback();
+    }
+  })
+}
 
 /**
  * @private @func createNoteIndexingFile
@@ -97,7 +146,7 @@ function createNoteIndexingFile(callback) {
         callback();
       });
     } else {
-      printc('Note-indexing file has been created')
+      printc('Note-indexing file has been created');
       callback();
     }
   });
@@ -219,49 +268,6 @@ function findDir (dirlist, ind, indexobj, callback) {
 }
 
 /**
- * @private @func updateNoteIndexHistory
- * @param {string} optType The type of updating policy.
- * @param {string} noteid The note which is created, deleted, or moved
- * @param {string} dirpath The dirpath of a directory which is created, deleted, or moved.
- *                         Or, the old name of a directory
- * @param {string} ndirpath The dirpath of a directory which a note or a directory is moved to.
- *                          Or, the new name of a directory
- * @param {func} callback The function which will be called after updating finishes
- * @returns {null}
- */
-function updateNoteIndexHistory(optType, noteid, dirpath, ndirpath, callback) {
-  let timeStamp = getCurTime();
-  switch(optType) {
-    case 'newNote':
-      break;
-    case 'deleteNote':
-      break;
-    case 'moveNote':
-      break;
-    case 'newDirectory':
-      break;
-    case 'deleteDirectory':
-      break;
-    case 'moveDirectory':
-      break;
-    case 'renameDirectory':
-      break;
-    default:
-      printc('Something unknown goes wrong when updating file index');
-  }
-}
-
-/**
- * @private @func updateNoteIndexHistoryCore
- * @desc Update the history of note indexing file
- * @param {object} historyObj The history object
- * @param {func} callback This function will be called after updating finishes
- */
-function updateNoteIndexHistoryCore(historyObj, callback) {
-  
-}
-
-/**
  * @private @func ifNoteExist
  * @desc Check if a note exists in database
  * @param {string} noteid The noteid to be checked
@@ -283,12 +289,12 @@ function ifNoteExist(noteid, noteIndex, callback) {
 
 /**
  * @private @func deleteNoteFromDatabase
- * @param {object} note Note header
+ * @param {object} id Note id
  * @param {func} callback Callback function
  * @returns null
  */
-function deleteNoteFromDatabase(note, callback) {
-  db.get(note._id).then(note => {
+function deleteNoteFromDatabase(id, callback) {
+  db.get(id).then(note => {
     printc(`Get info of note ${note._id} from database successfully`);
     db.remove(note).then(res => {
       printc(`Note ${note._id} is deleted from database successfully`);
@@ -298,17 +304,30 @@ function deleteNoteFromDatabase(note, callback) {
 }
 
 /**
+ * @private @func deleteNoteFromNoteIndexingFile
+ * @desc Delete note from note indexing file
+ * @param {object} noteIndex
+ * @param {string} id
+ * @param {fcun} callback Param: newNoteIndex
+ * @returns {null}
+ */
+function deleteNoteFromNoteIndexingFile(noteIndex, id, callback) {
+  delete noteIndex[id];
+  callback(noteIndex);
+}
+
+/**
  * @private @func _deleteDirectory
  * @desc Traverse the directory to find all the notes to be deleted
  * @param {object} dir
- * @param {object} noteIndex
+ * @param {object} directoryIndex
  * @param {func} callback Param: notes
  * @returns null
  */
-function _deleteDirectory(dir, noteIndex, callback) {
+function _deleteDirectory(dir, directoryIndex, callback) {
   let allNotes = dir.notes;
   for (let d in dir.directories) {
-    _deleteDirectory(dir.directories[d], noteIndex, (notes) => {
+    _deleteDirectory(dir.directories[d], directoryIndex, (notes) => {
       allNotes = allNotes.concat(notes);
     });
   }
@@ -333,16 +352,16 @@ function formatDirpath(dirpath) {
  * @private @func sortDirectory
  * @desc Sort all directories under a directory
  * @param {string} ppath
- * @param {object} noteIndex
+ * @param {object} directoryIndex
  * @param {func} callback
  * @returns null
  */
-function sortDirectory(ppath, noteIndex, callback) {
-  findDir(ppath.split('/'), 1, noteIndex, dir => {
+function sortDirectory(ppath, directoryIndex, callback) {
+  findDir(ppath.split('/'), 1, directoryIndex, dir => {
     dir.directories.sort((a, b) => {
       return a.name.localeCompare(b.name);
     });
-    callback(noteIndex);
+    callback(directoryIndex);
   })
 }
 
@@ -350,17 +369,73 @@ function sortDirectory(ppath, noteIndex, callback) {
  * @private @func sortNotes
  * @desc Sort all notes under a directory
  * @param {string} ppath
+ * @param {object} directoryIndex
  * @param {object} noteIndex
- * @param {func} callback
+ * @param {func} callback Param: directoryIndex
  * @returns null
  */
-function sortNotes(ppath, noteIndex, callback) {
-  findDir(ppath.split('/'), 1, noteIndex, dir => {
-    dir.notes.sort((a, b) => {
+function sortNotes(ppath, directoryIndex, noteIndex, callback) {
+  findDir(ppath.split('/'), 1, directoryIndex, dir => {
+    if (!dir) {
+      console.error(`Cannot find directory ${ppath}.`);
+      return;
+    }
+    // 1. Get note title from noteIndex by directoryIndex
+    let titles = [];
+    for (let i in dir.notes) {
+      let id = dir.notes[i];
+      titles.push({
+        title: noteIndex[id].title,
+        id: id,
+      });
+    }
+
+    // 2. Sort it
+    titles.sort((a, b) => {
       return a.title.localeCompare(b.title);
     });
-    callback(noteIndex);
+
+    // 3. Rearrange ID in directoryIndex
+    let newNotes = []
+    for (let i in titles) {
+      newNotes.push(titles[i].id);
+    }
+    dir.notes = newNotes;
+
+    callback(directoryIndex);
   })
+}
+
+/**
+ * @private @func removeNoteFromDirectory
+ * @param {object} note The note object
+ * @param {object} directoryIndex Note index file
+ * @param {func} callback Callback function. Param: newNoteIndex
+ * @returns null
+ */
+function removeNoteFromDirectory(note, directoryIndex, callback) {
+  findDir(note.ppath.split('/'), 1, directoryIndex, dir => {
+    if (dir === false) {
+      console.error(`Directory ${note.ppath} does not exist!`);
+      callback(false);
+    } else {
+      let index = null;
+      let found = false;
+      for (index in dir.notes) {
+        if (dir.notes[index] === note._id) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        console.error(`Cannot find note ${note._id} in directory ${dir.name}!`);
+        callback(false);
+      } else {
+        dir.notes.splice(index, 1);
+        callback(directoryIndex);
+      }
+    }
+  });
 }
 
 // ===================================================================================
@@ -369,8 +444,8 @@ function sortNotes(ppath, noteIndex, callback) {
 /**
  * @public @func initDB
  * @desc Initialize the database
- * @param {func} callback This function will be called after initializing
- * @returns {object} Return the tags indexing file and notes indexng file
+ * @param {func} callback Params: noteIndex, tagIndex, directoryIndex
+ * @returns {null} 
  */
 export function initDB(callback) {
   // set up plugin for PouchDB
@@ -388,13 +463,17 @@ export function initDB(callback) {
     // create note-index file and tags file
     // index 1: note-indexing file
     // index 2: tags-indexing file
-    createNoteIndexingFile(() => {
-      createTagIndexingFile(() => {
-        createSettingFile(() => {
-          createTutorialNote(() => {
-            db.get('1').then(noteIndex => {
-              db.get('2').then(tagIndex => {
-                callback(noteIndex.content, tagIndex.content);
+    createDirectoryIndexingFile(() => {
+      createNoteIndexingFile(() => {
+        createTagIndexingFile(() => {
+          createSettingFile(() => {
+            createTutorialNote(() => {
+              db.get('0').then(directoryIndex => {
+                db.get('1').then(noteIndex => {
+                  db.get('2').then(tagIndex => {
+                    callback(noteIndex.content, tagIndex.content, directoryIndex.content);
+                  });
+                });
               });
             });
           });
@@ -409,24 +488,24 @@ export function initDB(callback) {
  * @desc Create a new directory 
  * @param {string} dirpath Where the directory locates
  * @param {string} name The name of the new directory
- * @param {object} noteIndex The note index object which stores the index of all notes
- * @param {func} callback This function will be called after creating the new directory
+ * @param {object} directoryIndex The note index object which stores the index of all notes
+ * @param {func} callback Param: newDirectoryIndex
  * @returns {null}
  */
-export function newDirectory(dirpath, name, noteIndex, callback) {
-  findDir(dirpath.split('/'), 1, noteIndex, dir => {
+export function newDirectory(dirpath, name, directoryIndex, callback) {
+  findDir(dirpath.split('/'), 1, directoryIndex, dir => {
     let newDir = {
       name: name,
       ppath: formatDirpath(dirpath),
       directories: [],
       notes: []
     };
-    findDir((formatDirpath(dirpath) + name).split('/'), 1, noteIndex, nonexistent => {
+    findDir((formatDirpath(dirpath) + name).split('/'), 1, directoryIndex, nonexistent => {
       if (nonexistent !== false) {
         console.error(`Folder ${dir.ppath + name} has existed! Please use another name for this folder.`)
       } else {
         dir.directories.push(newDir);
-        sortDirectory(formatDirpath(dirpath), noteIndex, callback);
+        sortDirectory(formatDirpath(dirpath), directoryIndex, callback);
       }
     })
   });
@@ -437,12 +516,12 @@ export function newDirectory(dirpath, name, noteIndex, callback) {
  * @desc Rename a directory
  * @param {string} dirpath
  * @param {string} name
- * @param {object} noteIndex
- * @param {func} callback
+ * @param {object} directoryIndex
+ * @param {func} callback Param: newDirectoryIndex
  * @returns {null}
  */
-export function renameDirectory(dirpath, name, noteIndex, callback) {
-  findDir(dirpath.split('/'), 1, noteIndex, dir => {
+export function renameDirectory(dirpath, name, directoryIndex, callback) {
+  findDir(dirpath.split('/'), 1, directoryIndex, dir => {
     dir.name = name;
 
     let d = dirpath.split('/');
@@ -450,7 +529,7 @@ export function renameDirectory(dirpath, name, noteIndex, callback) {
     console.log(d.join('/'));
     d = d.join('/');
     if (d === '') d = '/';
-    sortDirectory(d, noteIndex, callback);
+    sortDirectory(d, directoryIndex, callback);
   })
 }
 
@@ -458,23 +537,25 @@ export function renameDirectory(dirpath, name, noteIndex, callback) {
  * @public @func deleteDirectory
  * @desc Remove a directory and all its notes/sub directory from database (including the related tags)
  * @param {string} dirpath The directory which will be deleted
- * @param {object} noteIndex The note index object which stores the index of all notes
- * @param {func} callback This function will be called after deleting finishes
+ * @param {object} directoryIndex The directory index object which stores the index of all notes
+ * @param {object} noteIndex The note index object
+ * @param {func} callback Params: directoryIndex, noteIndex
  * @returns null
  */
-export function deleteDirectory(dirpath, noteIndex, callback) {
-  findDir(dirpath.split('/'), 1, noteIndex, dir => {
+export function deleteDirectory(dirpath, directoryIndex, noteIndex, callback) {
+  findDir(dirpath.split('/'), 1, directoryIndex, dir => {
     if (dir === false) console.error(`Error: Cannot find directory ${dirpath}!`);
     // find all notes to be deleted
-    _deleteDirectory(dir, noteIndex, notes => {
+    _deleteDirectory(dir, directoryIndex, notes => {
       // delete notes from database
       for (let n in notes) {
         deleteNoteFromDatabase(notes[n], () => {});
+        deleteNoteFromNoteIndexingFile(noteIndex, notes[n], () => {});
       }
       // delete directory
-      findDir(dir.ppath.split('/'), 1, noteIndex, dir2 => {
+      findDir(dir.ppath.split('/'), 1, directoryIndex, dir2 => {
         dir2.directories.splice(dir2.directories.indexOf(dir), 1);
-        callback(noteIndex);
+        callback(directoryIndex, noteIndex);
       })
     });
   });
@@ -484,11 +565,12 @@ export function deleteDirectory(dirpath, noteIndex, callback) {
  * @public @func newNote
  * @desc Create a new note in PouchDB 
  * @param {string} dirpath The directory which new note will locate
- * @param {object} noteIndex The note index object which stores the index of all notes
- * @param {func} callback This function will be called after creating a new note. Param: noteIndex, noteHeader, note
+ * @param {object} directoryIndex The directory index object which stores the index of all notes
+ * @param {object} noteIndex The note index object 
+ * @param {func} callback Param: directoryIndex, noteIndex, noteHeader, note
  * @returns null
  */
-export function newNote(dirpath, noteIndex, callback) {
+export function newNote(dirpath, directoryIndex, noteIndex, callback) {
   let curTime = getCurTime();
   let note = {
     _id: getNewID(),
@@ -496,7 +578,7 @@ export function newNote(dirpath, noteIndex, callback) {
   };
   db.put(note).then(res => {
     getNote(note._id, note => {
-      findDir(dirpath.split('/'), 1, noteIndex, dir => {
+      findDir(dirpath.split('/'), 1, directoryIndex, dir => {
         let noteHeader = {
           _id: note._id,
           ppath: dirpath,
@@ -505,10 +587,11 @@ export function newNote(dirpath, noteIndex, callback) {
           lastModifiedTime: curTime,
           createdTime: curTime,
         };
-        dir.notes.push(noteHeader);
+        noteIndex[note._id] = noteHeader;
+        dir.notes.push(note._id);
         printc('A new note is created successfully');
-        sortNotes(dirpath, noteIndex, newNoteIndex => {
-          callback(newNoteIndex, noteHeader, note);
+        sortNotes(dirpath, directoryIndex, noteIndex, newDirectoryIndex => {
+          callback(newDirectoryIndex, noteIndex, noteHeader, note);
         });
       });
     });
@@ -519,14 +602,13 @@ export function newNote(dirpath, noteIndex, callback) {
 
 /**
  * @public @func updateNote
- * @desc Update a note.
+ * @desc Update content of a note.
  * @param {object} noteid ID of the note in database
  * @param {string} noteContent Content of the note 
- * @param {object} noteIndex The note index object which stores the index of all notes
  * @param {func} callback This callback function which will be called after updating
  * @returns {object} The note just updated.
  */
-export function updateNote(noteid, noteContent, noteIndex, callback) {
+export function updateNote(noteid, noteContent, callback) {
   db.get(noteid).then(res => {
     let newNote = {
       _id: res._id,
@@ -535,8 +617,7 @@ export function updateNote(noteid, noteContent, noteIndex, callback) {
     };
     db.put(newNote, {force: true}).then(res => {
       printc(`Note ${noteid} is updated successfully`);
-      // TODO: update note info in note index file 
-      if (callback) callback(noteIndex);
+      if (callback) callback();
     }).catch(err => {
       console.error(err);
     });
@@ -552,18 +633,14 @@ export function updateNote(noteid, noteContent, noteIndex, callback) {
  * @param {string} ppath
  * @param {string} noteid
  * @param {object} noteIndex
- * @param {func} callback
+ * @param {object} directoryIndex
+ * @param {func} callback Param: newNoteIndex, newDirectoryIndex
  * @returns null
  */
-export function updateTitle(newTitle, ppath, noteid, noteIndex, callback) {
-  findDir(ppath.split('/'), 1, noteIndex, dir => {
-    for (let i in dir.notes) {
-      if (dir.notes[i]._id === noteid) {
-        dir.notes[i].title = newTitle;
-        sortNotes(ppath, noteIndex, callback);
-        break;
-      }
-    }
+export function updateTitle(newTitle, ppath, noteid, noteIndex, directoryIndex, callback) {
+  noteIndex[noteid].title = newTitle;
+  sortNotes(ppath, directoryIndex, noteIndex, newDirectoryIndex => {
+    callback(noteIndex, newDirectoryIndex);
   });
 }
 
@@ -574,30 +651,23 @@ export function updateTitle(newTitle, ppath, noteid, noteIndex, callback) {
  * @param {string} srcDir ppath of the moved note
  * @param {string} destDir Path of the dest directory
  * @param {object} noteIndex The noteIndex file
- * @param {func} callback Param: (ifUpdate, newNoteIndex)
+ * @param {object} directoryIndex The directoryIndex file
+ * @param {func} callback Param: (ifUpdate, newDirectoryIndex, newNoteIndex)
  * @returns {null}
  */
-export function moveNote(id, srcDir, destDir, noteIndex, callback) {
+export function moveNote(id, srcDir, destDir, noteIndex, directoryIndex, callback) {
   if (srcDir === destDir) {
     console.log(`Note ${id} is moved within the same directory--${srcDir} and ${destDir}. Operation is canceled.`);
     callback(false, null);
   } else {
-    findDir(srcDir.split('/'), 1, noteIndex, srcD => {
-      findDir(destDir.split('/'), 1, noteIndex, destD => {
-        for (let i in srcD.notes) {
-          if (srcD.notes[i]._id === id) {
-            srcD.notes[i].ppath = destDir;
-            if (srcD.notes[i].ppath[srcD.notes[i].ppath.length - 1] !== '/') {
-              srcD.notes[i].ppath += '/';
-            }
-            destD.notes.push(srcD.notes[i]);
-            srcD.notes.splice(i, 1);
-            sortNotes(destDir, noteIndex, newNoteIndex => {
-              callback(true, newNoteIndex);
-            });
-            return;
-          }
-        }
+    findDir(srcDir.split('/'), 1, directoryIndex, srcD => {
+      findDir(destDir.split('/'), 1, directoryIndex, destD => {
+        noteIndex[id].ppath = formatDirpath(destDir);
+        destD.notes.push(id);
+        srcD.notes.splice(srcD.notes.indexOf(id), 1);
+        sortNotes(destDir, directoryIndex, noteIndex, newDirectoryIndex => {
+          callback(true, newDirectoryIndex, noteIndex);
+        });
       })
     })
   }
@@ -609,11 +679,11 @@ export function moveNote(id, srcDir, destDir, noteIndex, callback) {
  * @param {string} name Namd of the moved directory
  * @param {string} srcDir ppath of the moved note
  * @param {string} destDir Path of the dest directory
- * @param {object} noteIndex The noteIndex file
- * @param {func} callback Param: (ifUpdate, newNoteIndex)
+ * @param {object} directoryIndex The noteIndex file
+ * @param {func} callback Param: (ifUpdate, newDirectoryIndex)
  * @returns {null}
  */
-export function moveDirectory(name, srcDir, destDir, noteIndex, callback) {
+export function moveDirectory(name, srcDir, destDir, directoryIndex, callback) {
   let re = RegExp(`^${srcDir + name}`);
   if (srcDir === destDir) {
     console.log(`Directory ${name} is moved within the same directory--${srcDir} and ${destDir}. Operation is canceled.`);
@@ -622,15 +692,15 @@ export function moveDirectory(name, srcDir, destDir, noteIndex, callback) {
     console.log(`Directory ${destDir} belongs to directory ${srcDir}. Operation is canceled.`);
     callback(false, null);
   } else {
-    findDir(srcDir.split('/'), 1, noteIndex, srcD => {
-      findDir(destDir.split('/'), 1, noteIndex, destD => {
+    findDir(srcDir.split('/'), 1, directoryIndex, srcD => {
+      findDir(destDir.split('/'), 1, directoryIndex, destD => {
         for (let i in srcD.directories) {
           if (srcD.directories[i].name === name) {
             srcD.directories[i].ppath = destDir;
             destD.directories.push(srcD.directories[i]);
             srcD.directories.splice(i, 1);
-            sortDirectory(destDir, noteIndex, newNoteIndex => {
-              callback(true, newNoteIndex);
+            sortDirectory(destDir, directoryIndex, newDirectoryIndex => {
+              callback(true, newDirectoryIndex);
             });
             return;
           }
@@ -641,18 +711,25 @@ export function moveDirectory(name, srcDir, destDir, noteIndex, callback) {
 }
 
 /**
- * @public @func deleteNote 
+ * @public @func deleteNote
  * @desc Delete a note.
  * @param {object} note The note header object
  * @param {object} noteIndex The note index object which stores the index of all notes
- * @param {func} callback This function will be called after deleting successfully. Param: newNoteIndex
+ * @param {object} directoryIndex The directory index object which stores the index of all notes
+ * @param {func} callback Param: newDirectoryIndex, newNoteIndex
  * @returns null
  */
-export function deleteNote(note, noteIndex, callback) {
-  removeNoteFromDirectory(note, noteIndex, result => {
-    if (result === false) console.error('Something error occurs when deleting note!');
-    deleteNoteFromDatabase(note, () => {
-      callback(noteIndex);
+export function deleteNote(note, noteIndex, directoryIndex, callback) {
+  removeNoteFromDirectory(note, directoryIndex, result => {
+    if (result === false) {
+      console.error('Something error occurs when deleting note!');
+      callback(directoryIndex);
+      return;
+    }
+    deleteNoteFromNoteIndexingFile(noteIndex, note._id, newNoteIndex => {
+      deleteNoteFromDatabase(note._id, () => {
+        callback(directoryIndex, newNoteIndex);
+      });
     });
   });
 }
@@ -671,36 +748,6 @@ export function getNote(noteid, callback) {
 }
 
 /**
- * @public @func removeNoteFromDirectory
- * @param {object} note The note object
- * @param {object} noteIndex Note index file
- * @param {func} callback Callback function. Param: newNoteIndex
- * @returns null
- */
-export function removeNoteFromDirectory(note, noteIndex, callback) {
-  findDir(note.ppath.split('/'), 1, noteIndex, dir => {
-    if (dir === false) {
-      console.error(`Directory ${note.ppath} does not exist!`);
-      callback(false);
-    } else {
-      let index = null;
-      for (index in dir.notes) {
-        if (dir.notes[index]._id === note._id) {
-          break;
-        }
-      }
-      if (index === null) {
-        console.error(`Cannot find note ${note._id} in directory ${dir.name}!`);
-        callback(false);
-      } else {
-        dir.notes.splice(index, 1);
-        callback(noteIndex);
-      }
-    }
-  });
-}
-
-/**
  * @public @func getAllNotes
  * @desc Get all notes in database and pass them into the callback function.
  * @param {func} callback This function will be called after get all notes.
@@ -709,8 +756,10 @@ export function removeNoteFromDirectory(note, noteIndex, callback) {
 export function getAllNotes(callback) {
   db.find({
     selector: {$and: [
-      {_id: {$ne: '1'}},
-      {_id: {$ne: '2'}},
+      {_id: {$ne: '0'}}, // note indexing file
+      {_id: {$ne: '1'}}, // directory indexing file
+      {_id: {$ne: '2'}}, // tag indexing file
+      {_id: {$ne: '3'}}, // settings file
     ]},
   }).then(result => {
     printc(result.docs);
@@ -725,7 +774,7 @@ export function getAllNotes(callback) {
  */
 export function updateNoteIndexFile(noteIndex) {
   if (noteIndex === null) return;
-  db.get('1').then(res => {
+  db.get('0').then(res => {
     let newNoteIndex = {
       content: noteIndex,
       _id: res._id,
@@ -738,6 +787,52 @@ export function updateNoteIndexFile(noteIndex) {
     });
   }).catch(err => {
     console.error(`Cannot update noteindex file!`);
+  });
+}
+
+/**
+ * @public @func updateDirectoryIndexFile
+ * @param {object} directoryIndex Noteindex file
+ * @returns null
+ */
+export function updateDirectoryIndexFile(directoryIndex) {
+  if (directoryIndex === null) return;
+  db.get('1').then(res => {
+    let newDirectoryIndex = {
+      content: directoryIndex,
+      _id: res._id,
+      _rev: res._rev,
+    };
+    db.put(newDirectoryIndex, {force: true}).then(res => {
+      printc(`DirectoryIndex file is updated successfully`);
+    }).catch(err => {
+      console.error(err);
+    });
+  }).catch(err => {
+    console.error(`Cannot update directoryIndex file!`);
+  });
+}
+
+/**
+ * @public @func updateTagIndexFile
+ * @param {object} tagIndex 
+ * @returns null
+ */
+export function updateTagIndexFile(tagIndex) {
+  if (tagIndex === null) return;
+  db.get('2').then(res => {
+    let newTagIndex = {
+      content: tagIndex,
+      _id: res._id,
+      _rev: res._rev,
+    };
+    db.put(newTagIndex, {force: true}).then(res => {
+      printc(`Tagindex file is updated successfully`);
+    }).catch(err => {
+      console.error(err);
+    });
+  }).catch(err => {
+    console.error(`Cannot update tagIndex file!`);
   });
 }
 
@@ -760,12 +855,12 @@ export function cleanDB(callback) {
  * @public @func ifDirectoryExist
  * @desc Check if a directory exists in database
  * @param {string} dirpath
- * @param {object} noteIndex The note index object which stores the index of all notes
+ * @param {object} directoryIndex The note index object which stores the index of all notes
  * @param {func} callback This functino will be called after query finishes
  * @returns {boolean} Result of if the directory exists
  */
-export function ifDirectoryExist(dirpath, noteIndex, callback) {
-  findDir(dirpath.split('/'), 1, noteIndex, res => {
+export function ifDirectoryExist(dirpath, directoryIndex, callback) {
+  findDir(dirpath.split('/'), 1, directoryIndex, res => {
     if (res === false) {
       callback(false);
     } else {
@@ -774,30 +869,25 @@ export function ifDirectoryExist(dirpath, noteIndex, callback) {
   });
 }
 
-export function runTest(noteIndex, tagIndex, callback) {
-  newDirectory('/Inbox', 'test', noteIndex, () => {
-    newDirectory('/Inbox/test', 'nestedFolder', noteIndex, () => {
-      newNote('/Inbox', noteIndex, () => {
-        // console.log(noteIndex);
-        // callback(noteIndex);
-        genNotes('/Inbox/test', noteIndex, 5, () => {
-          genNotes('/Inbox/test/nestedFolder', noteIndex, 5, () => {
-            callback(noteIndex);
-          });
-        });
-      });
-    });
-  });
+/**
+ * @public @func updateTags
+ * @desc Only update title of a note
+ * @param {object} tags
+ * @param {string} noteid
+ * @param {object} noteIndex
+ * @param {object} tagIndex
+ * @param {func} callback Param: noteIndex, newTagIndex
+ * @returns null
+ */
+export function updateTags(tags, noteid, noteIndex, tagIndex, callback) {
+  // noteIndex[noteid].tags = tags;
+  // parseTags(tags, tagIndex, newTagIndex => {
+  //   callback(noteIndex, newTagIndex);
+  // });
 }
 
-function genNotes(dirpath, noteIndex, ind, callback) {
-  if (ind === 0) {
-    callback(noteIndex);
-  } else {
-    newNote(dirpath, noteIndex, () => {
-      genNotes(dirpath, noteIndex, ind - 1, callback);
-    });
-  }
+export function runTest(noteIndex, tagIndex, callback) {
+  
 }
 
 /*

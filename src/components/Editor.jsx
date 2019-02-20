@@ -23,6 +23,7 @@ import {
   addEditor,
   setActiveEditor,
   updateNoteIndex,
+  updateDirectoryIndex,
   setNoteOpener,
 } from '../states/mainState.js';
 
@@ -113,7 +114,7 @@ class Editor extends React.Component {
   }
 
   handleNewEditor(noteid, ppath) {
-    if (this.props.noteIndex === null) return;
+    if (this.props.noteIndex === null || this.props.directoryIndex === null) return;
     if (typeof(noteid) === 'string') {
       console.log(`Open note ${noteid}`);
       getNote(noteid, note => {
@@ -131,8 +132,7 @@ class Editor extends React.Component {
         this.props.dispatch(setActiveEditor(noteid));
       });
     } else {
-      newNote(this.props.defaultNotePath, this.props.noteIndex, (newNoteIndex, noteHeader, note) => {
-        this.props.dispatch(updateNoteIndex(newNoteIndex));
+      newNote(this.props.defaultNotePath, this.props.directoryIndex, this.props.noteIndex, (newDirectoryIndex, newNoteIndex, noteHeader, note) => {
         let id = noteHeader._id;
         let newEditor = (
           <EditorCore 
@@ -144,6 +144,8 @@ class Editor extends React.Component {
             changeNoteSignal={this.handleChangeNoteSignal}
           />
         );
+        this.props.dispatch(updateNoteIndex(newNoteIndex));
+        this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
         this.props.dispatch(addEditor(newEditor, id));
         this.props.dispatch(setActiveEditor(id));
       });
@@ -170,9 +172,7 @@ class Editor extends React.Component {
     for (let i in this.props.tabArr) {
       let id = this.props.tabArr[i];
       if (noteArr[id].modified && noteArr[id].editor) {
-        updateNote(id, noteArr[id].editor.getValue(), this.props.noteIndex, newNoteIndex => {
-          this.props.dispatch(updateNoteIndex(newNoteIndex));
-        });
+        updateNote(id, noteArr[id].editor.getValue(), () => {});
       }
       noteArr[id].modified = false;
     }
@@ -182,9 +182,7 @@ class Editor extends React.Component {
   }
 
   handleSaveNote(id) {
-    updateNote(id, this.state.noteArr[id].editor.getValue(), this.props.noteIndex, newNoteIndex => {
-      this.props.dispatch(updateNoteIndex(newNoteIndex));
-    })
+    updateNote(id, this.state.noteArr[id].editor.getValue(), () => {});
   }
 
   handleChangeNoteSignal(id) {
@@ -220,6 +218,8 @@ export default connect (state => ({
   showTabBar: state.main.showTabBar,
   editorArr: state.main.editorArr,
   noteIndex: state.main.noteIndex,
+  directoryIndex: state.main.directoryIndex,
+  tagIndex: state.main.tagIndex,
   tabArr: state.main.tabArr,
 
   defaultNotePath: state.setting.defaultNotePath,

@@ -4,7 +4,9 @@
 // ============================================
 // import
 import {
-  updateNoteIndexFile
+  updateNoteIndexFile,
+  updateTagIndexFile,
+  updateDirectoryIndexFile,
 } from '../utils/storage.js';
 
 // ============================================
@@ -22,6 +24,8 @@ const initMainState = {
   titleArr: {},
   tabArr: [],
   noteIndex: null,
+  tagIndex: null,
+  directoryIndex: null,
   dispatcher: null,
   noteOpener: null,
 }
@@ -127,6 +131,20 @@ export function main(state=initMainState, action) {
         noteIndex: {...action.noteIndex}
       };
 
+    case 'main updateTagIndex':
+      updateTagIndexFile(action.tagIndex);
+      return {
+        ...state,
+        tagIndex: {...action.tagIndex}
+      };
+
+    case 'main updateDirectoryIndex':
+      updateDirectoryIndexFile(action.directoryIndex);
+      return {
+        ...state,
+        directoryIndex: {...action.directoryIndex}
+      };
+
     case 'main setDispatcher':
       return {
         ...state,
@@ -218,6 +236,20 @@ export function updateNoteIndex(noteIndex) {
   return {
     type: 'main updateNoteIndex',
     noteIndex: noteIndex
+  };
+}
+
+export function updateTagIndex(tagIndex) {
+  return {
+    type: 'main updateTagIndex',
+    tagIndex: tagIndex
+  };
+}
+
+export function updateDirectoryIndex(directoryIndex) {
+  return {
+    type: 'main updateDirectoryIndex',
+    directoryIndex: directoryIndex
   };
 }
 

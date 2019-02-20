@@ -17,12 +17,14 @@ import {connect} from 'react-redux';
 import { 
   setTitle,
   updateNoteIndex,
+  updateDirectoryIndex,
 } from '../states/mainState';
 
 // ============================================
 // import apis
 import { 
   updateTitle,
+  updateTags,
 } from '../utils/storage.js';
 import {
   init_math_preview
@@ -53,6 +55,7 @@ class EditorCore extends React.Component {
     saveNote: PropTypes.func,
     ppath: PropTypes.string,
     noteIndex: PropTypes.object,
+    directoryIndex: PropTypes.object,
     changeNoteSignal: PropTypes.func,
   }
 
@@ -160,19 +163,23 @@ class EditorCore extends React.Component {
       title = title.replace(/[\ \t]+$/, '');
       if (this.props.titleArr[this.props.id] !== title) {
         this.props.dispatch(setTitle(this.props.id, title));
-        updateTitle(title, this.props.ppath, this.props.id, this.props.noteIndex, newNoteIndex => {
+        updateTitle(title, this.props.ppath, this.props.id, this.props.noteIndex, this.props.directoryIndex, (newNoteIndex, newDirectoryIndex) => {
           this.props.dispatch(updateNoteIndex(newNoteIndex));
+          this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
         });
       }
     } else if (this.props.titleArr[this.props.id] !== 'Untitled') {
       this.props.dispatch(setTitle(this.props.id, 'Untitled'));
-      updateTitle('Untitled', this.props.ppath, this.props.id, this.props.noteIndex, newNoteIndex => {
+      updateTitle('Untitled', this.props.ppath, this.props.id, this.props.noteIndex, this.props.directoryIndex, (newNoteIndex, newDirectoryIndex) => {
         this.props.dispatch(updateNoteIndex(newNoteIndex));
+        this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
       });
     }
   }
 
   parseTags() {
+    if (this.state.editor.lineCount() < 2) return;
+
     let tagsLine = ' ' + this.state.editor.getLine(1);
     // regex with space
     let regWS = /\W(\#([\w\/]|\\.)([\w\s\/]|\\.)+([\w\/]|\\.)\b\#)/g;
@@ -181,6 +188,7 @@ class EditorCore extends React.Component {
 
     // match hashtags with space
     let tagsWS = tagsLine.match(regWS);
+    if (tagsWS === null) tagsWS = [];
 
     // remove match pattern
     for (let i in tagsWS) {
@@ -189,6 +197,7 @@ class EditorCore extends React.Component {
 
     // match hashtags without space
     let tags = tagsLine.match(reg);
+    if (tags === null) tags = [];
 
     // concat tags
     tags = tags.concat(tagsWS);
@@ -204,7 +213,9 @@ class EditorCore extends React.Component {
 
     // update tags
     tags.sort();
-    console.log(tags);
+    // updateTags(tags, this.props.ppath, this.props.id, this.props.noteIndex, newNoteIndex => {
+      
+    // });
   }
 
   handleClick() {
@@ -249,4 +260,5 @@ export default connect (state => ({
   activeEditorId: state.main.activeEditorId,
   titleArr: state.main.titleArr,
   noteIndex: state.main.noteIndex,
+  directoryIndex: state.main.directoryIndex,
 }))(EditorCore);

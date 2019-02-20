@@ -17,6 +17,8 @@ import Editor from './Editor.jsx';
 import {
   setSideBarWidth,
   updateNoteIndex,
+  updateTagIndex,
+  updateDirectoryIndex,
   setDispatcher,
 } from '../states/mainState.js';
 
@@ -67,18 +69,21 @@ class Main extends React.Component {
 
   componentWillMount() {
     this.props.dispatch(setDispatcher(this.props.dispatch));
-    if (0) {
-      initDB((noteIndex, tagIndex) => {
+    if (1) {
+      initDB(() => {
         cleanDB(() => {
-          initDB((noteIndex, tagIndex) => {
+          initDB((noteIndex, tagIndex, directoryIndex) => {
             this.props.dispatch(updateNoteIndex(noteIndex));
+            this.props.dispatch(updateTagIndex(tagIndex));
+            this.props.dispatch(updateDirectoryIndex(directoryIndex));
           });
         });
       });
     } else {
-      initDB((noteIndex, tagIndex) => {
+      initDB((noteIndex, tagIndex, directoryIndex) => {
         this.props.dispatch(updateNoteIndex(noteIndex));
-        console.log(noteIndex);
+        this.props.dispatch(updateTagIndex(tagIndex));
+        this.props.dispatch(updateDirectoryIndex(directoryIndex));
       });
     }
   }
