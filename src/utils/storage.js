@@ -317,17 +317,38 @@ function deleteNoteFromNoteIndexingFile(noteIndex, id, callback) {
 }
 
 /**
- * @private @func _deleteDirectory
- * @desc Traverse the directory to find all the notes to be deleted
+ * @private @func traverseDirectory
+ * @desc Traverse the directory to find all the notes belong to a directory
  * @param {object} dir
  * @param {object} directoryIndex
  * @param {func} callback Param: notes
  * @returns null
  */
-function _deleteDirectory(dir, directoryIndex, callback) {
+function traverseDirectory(dir, directoryIndex, callback) {
   let allNotes = dir.notes;
   for (let d in dir.directories) {
-    _deleteDirectory(dir.directories[d], directoryIndex, (notes) => {
+    traverseDirectory(dir.directories[d], directoryIndex, (notes) => {
+      allNotes = allNotes.concat(notes);
+    });
+  }
+  callback(allNotes);
+}
+
+/**
+ * @private @func traverseDirectoryAndChangePpath
+ * @desc Traverse the directory to find all the notes belong to a directory
+ * @param {object} dir
+ * @param {object} directoryIndex
+ * @param {string} fromStr
+ * @param {string} toStr
+ * @param {func} callback Param: notes
+ * @returns null
+ */
+function traverseDirectoryAndChangePpath(dir, directoryIndex, fromStr, toStr, callback) {
+  let allNotes = dir.notes;
+  for (let d in dir.directories) {
+    dir.directories[d].ppath = dir.directories[d].ppath.replace(fromStr, toStr);
+    traverseDirectoryAndChangePpath(dir.directories[d], directoryIndex, fromStr, toStr, (notes) => {
       allNotes = allNotes.concat(notes);
     });
   }
@@ -546,7 +567,7 @@ export function deleteDirectory(dirpath, directoryIndex, noteIndex, callback) {
   findDir(dirpath.split('/'), 1, directoryIndex, dir => {
     if (dir === false) console.error(`Error: Cannot find directory ${dirpath}!`);
     // find all notes to be deleted
-    _deleteDirectory(dir, directoryIndex, notes => {
+    traverseDirectory(dir, directoryIndex, notes => {
       // delete notes from database
       for (let n in notes) {
         deleteNoteFromDatabase(notes[n], () => {});
@@ -679,11 +700,12 @@ export function moveNote(id, srcDir, destDir, noteIndex, directoryIndex, callbac
  * @param {string} name Namd of the moved directory
  * @param {string} srcDir ppath of the moved note
  * @param {string} destDir Path of the dest directory
- * @param {object} directoryIndex The noteIndex file
- * @param {func} callback Param: (ifUpdate, newDirectoryIndex)
+ * @param {object} directoryIndex The directoryIndex file
+ * @param {object} noteIndex The noteIndex file
+ * @param {func} callback Param: (ifUpdate, newDirectoryIndex, newNoteIndex)
  * @returns {null}
  */
-export function moveDirectory(name, srcDir, destDir, directoryIndex, callback) {
+export function moveDirectory(name, srcDir, destDir, directoryIndex, noteIndex, callback) {
   let re = RegExp(`^${srcDir + name}`);
   if (srcDir === destDir) {
     console.log(`Directory ${name} is moved within the same directory--${srcDir} and ${destDir}. Operation is canceled.`);
@@ -697,10 +719,18 @@ export function moveDirectory(name, srcDir, destDir, directoryIndex, callback) {
         for (let i in srcD.directories) {
           if (srcD.directories[i].name === name) {
             srcD.directories[i].ppath = destDir;
-            destD.directories.push(srcD.directories[i]);
+            let d = srcD.directories[i]
+            destD.directories.push(d);
             srcD.directories.splice(i, 1);
-            sortDirectory(destDir, directoryIndex, newDirectoryIndex => {
-              callback(true, newDirectoryIndex);
+            traverseDirectoryAndChangePpath(d, directoryIndex, srcDir, destDir, notes => {
+              console.log(directoryIndex);
+              for (let i in notes) {
+                noteIndex[notes[i]].ppath = noteIndex[notes[i]].ppath.replace(srcDir, destDir);
+              }
+              sortDirectory(destDir, directoryIndex, newDirectoryIndex => {
+                callback(true, newDirectoryIndex, noteIndex);
+                console.log(noteIndex);
+              });
             });
             return;
           }

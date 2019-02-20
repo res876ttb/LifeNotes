@@ -187,9 +187,10 @@ class SideBarFile extends React.Component {
           }
         });
       } else if (type === 'dir') {
-        moveDirectory(id, ppath, this.props.note.ppath, this.props.directoryIndex, (result, newDirectoryIndex) => {
+        moveDirectory(id, ppath, this.props.note.ppath, this.props.directoryIndex, this.props.noteIndex, (result, newDirectoryIndex, newNoteIndex) => {
           if (result) {
             console.log('Directory is moved successfully!');
+            this.props.dispatch(updateNoteIndex(newNoteIndex));
             this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
           } else {
             console.log('Directory is not moved.');
