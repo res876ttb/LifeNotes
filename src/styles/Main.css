@@ -31,6 +31,10 @@ html, body {
   text-align: center;
 }
 
+/* Disable display of scrollbar */
+::-webkit-scrollbar { 
+  display: none; 
+}
 
 /* Following .float-win-* class styles are copied from "https://github.com/laobubu/HyperMD" */
 .float-win {

@@ -30,6 +30,7 @@
     "react-color": "^2.17.0",
     "react-dom": "^16.7.0",
     "react-hot-keys": "^1.2.2",
+    "react-perfect-scrollbar": "^1.4.4",
     "react-redux": "^5.1.1",
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",

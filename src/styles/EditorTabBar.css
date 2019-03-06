@@ -79,3 +79,8 @@
   width: 0px;
   display: inline-block;
 }
+
+/* style perfect scrollbar in tabbar */
+.ETB-xanchor-inner .ps__rail-x {
+  z-index: 10;
+}

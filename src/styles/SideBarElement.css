@@ -6,6 +6,7 @@
   background-color: rgba(0, 0, 0, 0);
   min-width: max-content;
   max-width: 100%;
+  padding-right: 5px;
 }
 
 .SideBarElement:hover {

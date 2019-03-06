@@ -17,6 +17,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+import PerfectScrollbar from 'react-perfect-scrollbar';
+
 // ============================================
 // import react components
 import SideBarFolder from './SideBarFolder.jsx';
@@ -44,6 +46,7 @@ import {
 // ============================================
 // import css file
 import '../styles/SideBar.css';
+import '../../vendor/react-perfect-scrollbar.min.css';
 
 // ============================================
 // constants
@@ -125,7 +128,9 @@ class SideBar extends React.Component {
         onDrop={this.handleDrop}
         onContextMenu={this.handleRightClick}
       >
-        {fileList}
+        <PerfectScrollbar>
+          {fileList}
+        </PerfectScrollbar>
         <Menu
           anchorReference={this.state.anchorReference}
           anchorEl={this.state.anchorEl}

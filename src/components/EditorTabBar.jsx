@@ -7,6 +7,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
+import PerfectScrollbar from 'react-perfect-scrollbar';
+
 // ============================================
 // import react components
 import EditorTabBarItem from './EditorTabBarItem.jsx';
@@ -65,16 +67,18 @@ class EditorTabBar extends React.Component {
         <div id='EditorTabBar-frame' className='noselect' style={{top: top}}>
           <div className='ETB-xanchor-outer'>
             <div className='ETB-xanchor-inner'>
-              <div className='ETB-begin'>&nbsp;</div>
-              {tabs}
-              <div className='ETB-end'>&nbsp;</div>
-              <div className='ETB-new' onClick={this.handleNewEditor}>
-                <div className='ETB-new-middle'>
-                  <div className='ETB-new-inner'>
-                    <i className="fas fa-plus"></i>
+              <PerfectScrollbar>
+                <div className='ETB-begin'>&nbsp;</div>
+                {tabs}
+                <div className='ETB-end'>&nbsp;</div>
+                <div className='ETB-new' onClick={this.handleNewEditor}>
+                  <div className='ETB-new-middle'>
+                    <div className='ETB-new-inner'>
+                      <i className="fas fa-plus"></i>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </PerfectScrollbar>
               <div className='ETB-bg'></div>
             </div>
           </div>

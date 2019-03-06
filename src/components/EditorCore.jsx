@@ -8,6 +8,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
+import PerfectScrollbar from 'react-perfect-scrollbar';
+
 // ============================================
 // import react components
 
@@ -139,9 +141,11 @@ class EditorCore extends React.Component {
         top: `${top}px`,
         zIndex: this.props.id === this.props.activeEditorId ? '1' : '0',
       }} onKeyDown={this.handleKeyDown} onClick={this.handleClick}>
-        <div className='EditorCore-HMD-wrapper'>
-          <textarea id={'EditorCore-frame' + this.props.id} onKeyDown={this.handleKeyDown}></textarea>
-        </div>
+        <PerfectScrollbar>
+          <div className='EditorCore-HMD-wrapper'>
+            <textarea id={'EditorCore-frame' + this.props.id} onKeyDown={this.handleKeyDown}></textarea>
+          </div>
+        </PerfectScrollbar>
 
         <div id={"math-preview-" + this.props.id} className="float-win float-win-hidden">
           <div className="float-win-title">
