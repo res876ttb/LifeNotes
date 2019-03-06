@@ -258,7 +258,7 @@ class SideBarFolder extends React.Component {
       dialogConfirm: 'Confirm',
       dialogCancel: 'Cancel',
       dialogConfirmAction: () => {
-        deleteDirectory(this.props.directory.ppath + this.props.directory.name, this.props.directoryIndex, this.props.noteIndex, (newDirectoryIndex, newNoteIndex) => {
+        deleteDirectory(this.props.directory.i, this.props.directoryIndex, this.props.noteIndex, (newDirectoryIndex, newNoteIndex) => {
           this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
           this.props.dispatch(updateNoteIndex(newNoteIndex));
         });

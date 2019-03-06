@@ -524,13 +524,14 @@ export function deleteDirectory(id, directoryIndex, noteIndex, callback) {
   // find all notes and directories which are going to be deleted
   traverseDirectory(directoryIndex[id], directoryIndex, (notes, dirs) => {
     // then, delete them
-    for (let n in notes) {
-      deleteNoteFromDatabase(notes[n], null);
-      delete noteIndex[notes[n]];
-    }
-    for (let d in dirs) {
-      delete directoryIndex[dirs[d]];
-    }
+    // for (let n in notes) {
+    //   deleteNoteFromDatabase(notes[n], null);
+    //   delete noteIndex[notes[n]];
+    // }
+    // for (let d in dirs) {
+    //   delete directoryIndex[dirs[d]];
+    // }
+    console.log(notes, dirs);
     callback(directoryIndex, noteIndex);
   });
 }

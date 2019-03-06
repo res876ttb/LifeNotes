@@ -132,9 +132,9 @@ class SideBar extends React.Component {
           {fileList}
           <div style={{
             height: '30px', 
-            borderBottom: '2px dashed rgb(150,150,150)', 
-            margin: '0px 10px', 
-            position: 'fixed', 
+            borderBottom: '2px dotted rgb(150,150,150)',
+            margin: '0px 14px', 
+            position: 'fixed',
             left: '0px', 
             width: `${this.props.width - 20}px`
           }}></div>
