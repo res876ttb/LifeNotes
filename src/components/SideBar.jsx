@@ -130,6 +130,14 @@ class SideBar extends React.Component {
       >
         <PerfectScrollbar>
           {fileList}
+          <div style={{
+            height: '30px', 
+            borderBottom: '2px dashed rgb(150,150,150)', 
+            margin: '0px 10px', 
+            position: 'fixed', 
+            left: '0px', 
+            width: `${this.props.width - 20}px`
+          }}></div>
         </PerfectScrollbar>
         <Menu
           anchorReference={this.state.anchorReference}
@@ -269,7 +277,7 @@ class SideBar extends React.Component {
   
   handleNewNote(e) {
     e.stopPropagation();
-    newNote('/', this.props.directoryIndex, this.props.noteIndex, (newDirectoryIndex, newNoteIndex) => {
+    newNote('0', this.props.directoryIndex, this.props.noteIndex, (newDirectoryIndex, newNoteIndex) => {
       this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
       this.props.dispatch(updateNoteIndex(newNoteIndex));
     });

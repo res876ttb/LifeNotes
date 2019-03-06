@@ -828,10 +828,32 @@ export function cleanDB(callback) {
  * @returns null
  */
 export function updateTags(tags, noteid, noteIndex, tagIndex, callback) {
-  // noteIndex[noteid].tags = tags;
-  // parseTags(tags, tagIndex, newTagIndex => {
-  //   callback(noteIndex, newTagIndex);
-  // });
+  // steps: 
+  // 1. find all corresponding tags
+  // 1.1. find with noteid <= used for removement
+  // 1.2. find with keyword <= used for appending
+  // 2. update tags indexing file
+  // 2.1. remove unused tags
+  // 2.2. remove id from used tags
+  // 2.3. add id to used tags
+  // 2.4. add new tags
+  // 3. update noteIndex
+
+  // find all corresponding tags
+  findTagsWithKeyword(tags, tagIndex, cts => { // corresponding tags
+
+  });
+  findTagsWithNoteid();
+}
+
+/**
+ * @private @func findTagsWithKeyword
+ * @param {array} tags The keywords we want to search
+ * @param {object} tagIndex 
+ * @param {}
+ */
+function findTagsWithKeyword(tags, tagIndex, callback) {
+
 }
 
 export function runTest(noteIndex, tagIndex, callback) {
