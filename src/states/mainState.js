@@ -159,7 +159,7 @@ export function main(state=initMainState, action) {
 
     case 'main openNote':
       if (state.tabArr.indexOf(action.noteid) === -1) {
-        state.noteOpener(action.noteid, action.ppath);
+        state.noteOpener(action.noteid, action.dir);
         return state;
       } else {
         return {
@@ -260,11 +260,11 @@ export function setDispatcher(dispatcher) {
   };
 }
 
-export function openNote(noteid, ppath) {
+export function openNote(noteid, dir) {
   return {
     type: 'main openNote',
     noteid: noteid,
-    ppath: ppath,
+    dir: dir,
   };
 }
 

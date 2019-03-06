@@ -80,7 +80,7 @@ class SideBar extends React.Component {
     this.handleDrop = this.handleDrop.bind(this);
 
     this.state = {
-      expendedDir: ['//'],
+      expendedDir: ['0'],
       showall: false,
 
       anchorEl: null,
@@ -114,7 +114,7 @@ class SideBar extends React.Component {
   render() {
     let fileList = <div></div>
     if (this.props.directoryIndex != null) {
-      fileList = this.getTreeComponents(this.props.directoryIndex, 0);
+      fileList = this.getTreeComponents(this.props.directoryIndex['0'], 0);
     }
 
     return (
@@ -183,15 +183,15 @@ class SideBar extends React.Component {
     );
   }
 
-  folderToggler(folderName) {
+  folderToggler(id) {
     // console.log(`Toggle ${folderName}`);
-    if (this.state.expendedDir.indexOf(folderName) == -1) {
+    if (this.state.expendedDir.indexOf(id) == -1) {
       this.setState({
-        expendedDir: [...this.state.expendedDir, folderName]
+        expendedDir: [...this.state.expendedDir, id]
       });
     } else {
       let tmp = [...this.state.expendedDir];
-      tmp.splice(this.state.expendedDir.indexOf(folderName), 1);
+      tmp.splice(this.state.expendedDir.indexOf(id), 1);
       this.setState({
         expendedDir: tmp
       });
@@ -199,28 +199,28 @@ class SideBar extends React.Component {
   }
 
   getTreeComponents(directory, level) {
-    if ((this.state.expendedDir.indexOf(directory.ppath + directory.name) == -1 && this.state.showall == false) || directory == null) {
+    if ((this.state.expendedDir.indexOf(directory.i) == -1 && this.state.showall == false) || directory == null) {
       return (<div></div>);
     }
     let dirList = [];
     let noteList = [];
 
-    for (let d in directory.directories) {
+    for (let d in directory.d) {
       dirList.push(
         <SideBarFolder 
-          directory={directory.directories[d]} 
-          level={level} 
-          child={this.getTreeComponents(directory.directories[d], level + 1)}
+          directory={this.props.directoryIndex[directory.d[d]]}
+          level={level}
+          child={this.getTreeComponents(this.props.directoryIndex[directory.d[d]], level + 1)}
           toggler={this.folderToggler}
           expendedDir={this.state.expendedDir}
           key={getNewID()}
         />
       );
     }
-    for (let n in directory.notes) {
+    for (let n in directory.no) {
       noteList.push(
         <SideBarFile 
-          note={this.props.noteIndex[directory.notes[n]]}
+          note={this.props.noteIndex[directory.no[n]]}
           key={getNewID()}
         />
       );
@@ -299,7 +299,7 @@ class SideBar extends React.Component {
       dialogCancel: 'Cancel',
       dialogConfirmAction: () => {
         console.log('Confirm');
-        newDirectory('/', this.state.dialogContent, this.props.directoryIndex, newDirectoryIndex => {
+        newDirectory('0', this.state.dialogContent, this.props.directoryIndex, newDirectoryIndex => {
           this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
         });
         this.handleDialogClose();
@@ -318,14 +318,14 @@ class SideBar extends React.Component {
   handleDrop(e) {
     e.stopPropagation();
     let id = e.dataTransfer.getData('id');
-    let ppath = e.dataTransfer.getData('ppath');
+    let d = e.dataTransfer.getData('d');
     let type = e.dataTransfer.getData('type');
     e.dataTransfer.setData('id', null);
-    e.dataTransfer.setData('ppath', null);
+    e.dataTransfer.setData('d', null);
     e.dataTransfer.setData('type', null);
-    if (type && id && ppath) {
+    if (type && id && d) {
       if (type === 'note') {
-        moveNote(id, ppath, '/', this.props.noteIndex, this.props.directoryIndex, (result, newDirectoryIndex, newNoteIndex) => {
+        moveNote(id, d, '0', this.props.noteIndex, this.props.directoryIndex, (result, newDirectoryIndex, newNoteIndex) => {
           if (result) {
             console.log('Note is moved successfully!');
             this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
@@ -335,7 +335,7 @@ class SideBar extends React.Component {
           }
         });
       } else if (type === 'dir') {
-        moveDirectory(id, ppath, '/', this.props.directoryIndex, this.props.noteIndex, (result, newDirectoryIndex, newNoteIndex) => {
+        moveDirectory(id, d, '0', this.props.directoryIndex, this.props.noteIndex, (result, newDirectoryIndex, newNoteIndex) => {
           if (result) {
             console.log('Directory is moved successfully!');
             this.props.dispatch(updateNoteIndex(newNoteIndex));

@@ -80,7 +80,6 @@ class Editor extends React.Component {
   }
 
   componentDidMount() {
-    this.handleNewEditor();
     this.handleCyclicSave();
   }
 
@@ -113,7 +112,7 @@ class Editor extends React.Component {
     );
   }
 
-  handleNewEditor(noteid, ppath) {
+  handleNewEditor(noteid, dir) {
     if (this.props.noteIndex === null || this.props.directoryIndex === null) return;
     if (typeof(noteid) === 'string') {
       console.log(`Open note ${noteid}`);
@@ -124,7 +123,7 @@ class Editor extends React.Component {
             id={noteid} key={noteid} 
             updateNoteArr={this.handleUpdateNoteArr} 
             saveNote={this.handleSaveNote}
-            ppath={ppath}
+            d={dir}
             changeNoteSignal={this.handleChangeNoteSignal}
           />
         );
@@ -140,7 +139,7 @@ class Editor extends React.Component {
             id={id} key={id} 
             updateNoteArr={this.handleUpdateNoteArr} 
             saveNote={this.handleSaveNote} 
-            ppath={noteHeader.ppath}
+            d={noteHeader.d}
             changeNoteSignal={this.handleChangeNoteSignal}
           />
         );

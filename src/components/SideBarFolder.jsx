@@ -82,7 +82,7 @@ class SideBarFolder extends React.Component {
         y: 0,
       },
       menuOpen: false,
-      unchangeable: this.props.directory.ppath + this.props.directory.name == '/Inbox' ? true : false,
+      unchangeable: this.props.directory.i === '1' ? true : false,
 
       dialogOpen: false,
       dialogTitle: 'Undefined',
@@ -112,11 +112,11 @@ class SideBarFolder extends React.Component {
           draggable={true}
           onDragStart={this.handleDragStart}
         >
-          {this.props.expendedDir.indexOf(this.props.directory.ppath + this.props.directory.name) === -1 ?
+          {this.props.expendedDir.indexOf(this.props.directory.i) === -1 ?
             <i className="far fa-folder width-28 text-center"></i> :
             <i className="far fa-folder-open width-28 text-center"></i>
           }
-          {this.props.directory.name}
+          {this.props.directory.na}
           <Menu
             anchorReference={this.state.anchorReference}
             anchorEl={this.state.anchorEl}
@@ -176,21 +176,21 @@ class SideBarFolder extends React.Component {
 
   handleDragStart(e) {
     e.dataTransfer.setData('type', 'dir');
-    e.dataTransfer.setData('id', this.props.directory.name);
-    e.dataTransfer.setData('ppath', this.props.directory.ppath);
+    e.dataTransfer.setData('id', this.props.directory.i);
+    e.dataTransfer.setData('d', this.props.directory.p);
   }
 
   handleDrop(e) {
     e.stopPropagation();
     let id = e.dataTransfer.getData('id');
-    let ppath = e.dataTransfer.getData('ppath');
+    let d = e.dataTransfer.getData('d');
     let type = e.dataTransfer.getData('type');
     e.dataTransfer.setData('id', null);
-    e.dataTransfer.setData('ppath', null);
+    e.dataTransfer.setData('d', null);
     e.dataTransfer.setData('type', null);
-    if (type && id && ppath) {
+    if (type && id && d) {
       if (type === 'note') {
-        moveNote(id, ppath, this.props.directory.ppath + this.props.directory.name + '/', this.props.noteIndex, this.props.directoryIndex, (result, newDirectoryIndex, newNoteIndex) => {
+        moveNote(id, d, this.props.directory.i, this.props.noteIndex, this.props.directoryIndex, (result, newDirectoryIndex, newNoteIndex) => {
           if (result) {
             console.log('Note is moved successfully!');
             this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
@@ -200,7 +200,7 @@ class SideBarFolder extends React.Component {
           }
         });
       } else if (type === 'dir') {
-        moveDirectory(id, ppath, this.props.directory.ppath + this.props.directory.name + '/', this.props.directoryIndex, this.props.noteIndex, (result, newDirectoryIndex, newNoteIndex) => {
+        moveDirectory(id, d, this.props.directory.i, this.props.directoryIndex, this.props.noteIndex, (result, newDirectoryIndex, newNoteIndex) => {
           if (result) {
             console.log('Directory is moved successfully!');
             this.props.dispatch(updateNoteIndex(newNoteIndex));
@@ -217,7 +217,7 @@ class SideBarFolder extends React.Component {
 
   handleNewNote(e) {
     e.stopPropagation();
-    newNote(this.props.directory.ppath + this.props.directory.name, this.props.directoryIndex, this.props.noteIndex, (newDirectoryIndex, newNoteIndex) => {
+    newNote(this.props.directory.i, this.props.directoryIndex, this.props.noteIndex, (newDirectoryIndex, newNoteIndex) => {
       this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
       this.props.dispatch(updateNoteIndex(newNoteIndex));
     });
@@ -234,7 +234,7 @@ class SideBarFolder extends React.Component {
       dialogCancel: 'Cancel',
       dialogConfirmAction: () => {
         console.log('Confirm');
-        newDirectory(this.props.directory.ppath + this.props.directory.name, this.state.dialogContent, this.props.directoryIndex, newDirectoryIndex => {
+        newDirectory(this.props.directory.i, this.state.dialogContent, this.props.directoryIndex, newDirectoryIndex => {
           this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
         });
         this.handleDialogClose();
@@ -282,7 +282,7 @@ class SideBarFolder extends React.Component {
       dialogConfirm: 'Confirm',
       dialogCancel: 'Cancel',
       dialogConfirmAction: () => {
-        renameDirectory(this.props.directory.ppath + this.props.directory.name, this.state.dialogContent, this.props.directoryIndex, newDirectoryIndex => {
+        renameDirectory(this.props.directory.i, this.state.dialogContent, this.props.directoryIndex, newDirectoryIndex => {
           this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
         });
         this.handleDialogClose();
@@ -342,7 +342,7 @@ class SideBarFolder extends React.Component {
 
   handleClick(e) {
     e.stopPropagation();
-    this.props.toggler(this.props.directory.ppath + this.props.directory.name);
+    this.props.toggler(this.props.directory.i);
   }
 }
 

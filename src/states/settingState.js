@@ -11,7 +11,7 @@
 // constants
 const defaultSaveInterval = 60000;
 const initSettingState = {
-  defaultNotePath: '/Inbox',
+  defaultNotePath: '1',
   saveInterval: 60000, // ms
 };
 

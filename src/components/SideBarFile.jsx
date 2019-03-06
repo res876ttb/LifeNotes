@@ -106,7 +106,7 @@ class SideBarFile extends React.Component {
         onDrop={this.handleDrop}
       >
         <i className="fas fa-file-alt width-28 text-center"></i>
-        {this.props.note.title}
+        {this.props.note.t}
         <Menu
           anchorReference={this.state.anchorReference}
           anchorEl={this.state.anchorEl}
@@ -164,20 +164,20 @@ class SideBarFile extends React.Component {
   handleDragStart(e) {
     e.dataTransfer.setData('type', 'note');
     e.dataTransfer.setData('id', this.props.note._id);
-    e.dataTransfer.setData('ppath', this.props.note.ppath);
+    e.dataTransfer.setData('d', this.props.note.d);
   }
 
   handleDrop(e) {
     e.stopPropagation();
     let id = e.dataTransfer.getData('id');
-    let ppath = e.dataTransfer.getData('ppath');
+    let d = e.dataTransfer.getData('d');
     let type = e.dataTransfer.getData('type');
     e.dataTransfer.setData('id', null);
-    e.dataTransfer.setData('ppath', null);
+    e.dataTransfer.setData('d', null);
     e.dataTransfer.setData('type', null);
-    if (type && id && ppath) {
+    if (type && id && d) {
       if (type === 'note') {
-        moveNote(id, ppath, this.props.note.ppath, this.props.noteIndex, this.props.directoryIndex, (result, newDirectoryIndex, newNoteIndex) => {
+        moveNote(id, d, this.props.note.d, this.props.noteIndex, this.props.directoryIndex, (result, newDirectoryIndex, newNoteIndex) => {
           if (result) {
             console.log('Note is moved successfully!');
             this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
@@ -187,7 +187,7 @@ class SideBarFile extends React.Component {
           }
         });
       } else if (type === 'dir') {
-        moveDirectory(id, ppath, this.props.note.ppath, this.props.directoryIndex, this.props.noteIndex, (result, newDirectoryIndex, newNoteIndex) => {
+        moveDirectory(id, d, this.props.note.d, this.props.directoryIndex, this.props.noteIndex, (result, newDirectoryIndex, newNoteIndex) => {
           if (result) {
             console.log('Directory is moved successfully!');
             this.props.dispatch(updateNoteIndex(newNoteIndex));
@@ -198,13 +198,13 @@ class SideBarFile extends React.Component {
         })
       }
     } else {
-      console.error('Something goes wrong! type, id or ppath is null.');
+      console.error('Something goes wrong! type, note ID or parent directory ID is null.');
     }
   }
 
   handleNewNote(e) {
     e.stopPropagation();
-    newNote(this.props.note.ppath, this.props.directoryIndex, this.props.noteIndex, (newDirectoryIndex, newNoteIndex) => {
+    newNote(this.props.note.d, this.props.directoryIndex, this.props.noteIndex, (newDirectoryIndex, newNoteIndex) => {
       this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
       this.props.dispatch(updateNoteIndex(newNoteIndex));
     });
@@ -221,7 +221,7 @@ class SideBarFile extends React.Component {
       dialogCancel: 'Cancel',
       dialogConfirmAction: () => {
         console.log('Confirm');
-        newDirectory(this.props.note.ppath, this.state.dialogContent, this.props.directoryIndex, newDirectoryIndex => {
+        newDirectory(this.props.note.d, this.state.dialogContent, this.props.directoryIndex, newDirectoryIndex => {
           this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
         });
         this.handleDialogClose();
@@ -241,7 +241,7 @@ class SideBarFile extends React.Component {
     e.stopPropagation();
     this.setState({
       dialogOpen: true,
-      dialogTitle: `Delete note "${this.props.note.title}"?`,
+      dialogTitle: `Delete note "${this.props.note.t}"?`,
       dialogConfirm: 'Confirm',
       dialogCancel: 'Cancel',
       dialogConfirmAction: () => {
@@ -287,7 +287,7 @@ class SideBarFile extends React.Component {
   handleClick(e) {
     e.stopPropagation();
     // open notes
-    this.props.dispatch(openNote(this.props.note._id, this.props.note.ppath));
+    this.props.dispatch(openNote(this.props.note._id, this.props.note.d));
   }
 
   handleRightClick(e) {

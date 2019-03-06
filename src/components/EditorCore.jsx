@@ -53,7 +53,7 @@ class EditorCore extends React.Component {
     titleArr: PropTypes.any,
     updateNoteArr: PropTypes.func,
     saveNote: PropTypes.func,
-    ppath: PropTypes.string,
+    d: PropTypes.string,
     noteIndex: PropTypes.object,
     directoryIndex: PropTypes.object,
     changeNoteSignal: PropTypes.func,
@@ -163,14 +163,14 @@ class EditorCore extends React.Component {
       title = title.replace(/[\ \t]+$/, '');
       if (this.props.titleArr[this.props.id] !== title) {
         this.props.dispatch(setTitle(this.props.id, title));
-        updateTitle(title, this.props.ppath, this.props.id, this.props.noteIndex, this.props.directoryIndex, (newNoteIndex, newDirectoryIndex) => {
+        updateTitle(title, this.props.d, this.props.id, this.props.noteIndex, this.props.directoryIndex, (newNoteIndex, newDirectoryIndex) => {
           this.props.dispatch(updateNoteIndex(newNoteIndex));
           this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
         });
       }
     } else if (this.props.titleArr[this.props.id] !== 'Untitled') {
       this.props.dispatch(setTitle(this.props.id, 'Untitled'));
-      updateTitle('Untitled', this.props.ppath, this.props.id, this.props.noteIndex, this.props.directoryIndex, (newNoteIndex, newDirectoryIndex) => {
+      updateTitle('Untitled', this.props.d, this.props.id, this.props.noteIndex, this.props.directoryIndex, (newNoteIndex, newDirectoryIndex) => {
         this.props.dispatch(updateNoteIndex(newNoteIndex));
         this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
       });
@@ -213,7 +213,7 @@ class EditorCore extends React.Component {
 
     // update tags
     tags.sort();
-    // updateTags(tags, this.props.ppath, this.props.id, this.props.noteIndex, newNoteIndex => {
+    // updateTags(tags, this.props.d, this.props.id, this.props.noteIndex, newNoteIndex => {
       
     // });
   }
