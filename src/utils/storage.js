@@ -417,6 +417,17 @@ function removeNoteFromDirectory(note, directoryIndex, callback) {
   callback(directoryIndex);
 }
 
+/**
+ * @private @func createTagsTrie
+ * @desc Create a trie for indexng tags
+ * @param tagIndex
+ * @param callback Param: tagTrie
+ * @returns {null}
+ */
+function createTagsTrie(tagIndex, callback) {
+  if (callback) callback(null);
+}
+
 // ===================================================================================
 // public function
 
@@ -450,7 +461,9 @@ export function initDB(callback) {
               db.get('0').then(directoryIndex => {
                 db.get('1').then(noteIndex => {
                   db.get('2').then(tagIndex => {
-                    callback(noteIndex.content, tagIndex.content, directoryIndex.content);
+                    createTagsTrie(tagIndex.content, tagTrie => {
+                      callback(noteIndex.content, tagIndex.content, directoryIndex.content, tagTrie);
+                    })
                   });
                 });
               });
@@ -524,14 +537,17 @@ export function deleteDirectory(id, directoryIndex, noteIndex, callback) {
   // find all notes and directories which are going to be deleted
   traverseDirectory(directoryIndex[id], directoryIndex, (notes, dirs) => {
     // then, delete them
-    // for (let n in notes) {
-    //   deleteNoteFromDatabase(notes[n], null);
-    //   delete noteIndex[notes[n]];
-    // }
-    // for (let d in dirs) {
-    //   delete directoryIndex[dirs[d]];
-    // }
-    console.log(notes, dirs);
+    for (let n in notes) {
+      deleteNoteFromDatabase(notes[n], null);
+      delete noteIndex[notes[n]];
+    }
+    for (let d in dirs) {
+      delete directoryIndex[dirs[d]];
+    }
+    // remove directory from parent directories
+    let pid = directoryIndex[id].p;
+    directoryIndex[pid].d.splice(directoryIndex[pid].d.indexOf(id), 1);
+    delete directoryIndex[id];
     callback(directoryIndex, noteIndex);
   });
 }
