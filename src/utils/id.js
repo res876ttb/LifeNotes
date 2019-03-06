@@ -6,5 +6,5 @@
 var us = require('microseconds');
 
 export function getNewID() {
-  return us.now().toString();
+  return us.now().toString() + Math.random().toString().slice(2);
 }
