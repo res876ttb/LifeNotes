@@ -415,6 +415,7 @@ function removeNoteFromDirectory(note, directoryIndex, callback) {
     return;
   }
   dir.no.splice(dir.no.indexOf(note._id), 1);
+  dir.mt = getCurTime();
   callback(directoryIndex);
 }
 
@@ -497,6 +498,7 @@ export function newDirectory(id, name, directoryIndex, callback) {
   dirHeader.d.push(newDir.i);
   
   sortDirectory(id, directoryIndex, newDirectoryIndex => {
+    newDirectoryIndex[id].mt = getCurTime();
     callback(newDirectoryIndex);
   });
 }
@@ -514,6 +516,7 @@ export function renameDirectory(id, name, directoryIndex, callback) {
   console.log(directoryIndex, directoryIndex[id], id);
   directoryIndex[id].na = name;
   sortDirectory(directoryIndex[id].p, directoryIndex, newDirectoryIndex => {
+    newDirectoryIndex[id].mt = getCurTime();
     callback(newDirectoryIndex);
   });
 }
@@ -541,6 +544,7 @@ export function deleteDirectory(id, directoryIndex, noteIndex, callback) {
     // remove directory from parent directories
     let pid = directoryIndex[id].p;
     directoryIndex[pid].d.splice(directoryIndex[pid].d.indexOf(id), 1);
+    directoryIndex[pid].mt = getCurTime();
     directoryIndex[id] = {};
     callback(directoryIndex, noteIndex);
   });
@@ -575,6 +579,7 @@ export function newNote(id, directoryIndex, noteIndex, callback) {
       noteIndex[note._id] = noteHeader;
       directoryIndex[id].no.push(note._id);
       sortNotes(id, directoryIndex, noteIndex, newDirectoryIndex => {
+        newDirectoryIndex[id].mt = getCurTime();
         callback(newDirectoryIndex, noteIndex, noteHeader, note);
       });
     });
@@ -623,6 +628,7 @@ export function updateNote(noteid, noteContent, callback) {
 export function updateTitle(newTitle, id, noteid, noteIndex, directoryIndex, callback) {
   noteIndex[noteid].t = newTitle;
   sortNotes(id, directoryIndex, noteIndex, newDirectoryIndex => {
+    directoryIndex[id].mt = getCurTime();
     callback(noteIndex, newDirectoryIndex);
   });
 }
@@ -646,8 +652,11 @@ export function moveNote(id, srcDID, destDID, noteIndex, directoryIndex, callbac
     let srcD = directoryIndex[srcDID];
     let destD = directoryIndex[destDID];
     noteIndex[id].d = destDID;
+    noteIndex[id].mt = getCurTime();
     destD.no.push(id);
     srcD.no.splice(srcD.no.indexOf(id), 1);
+    destD.mt = getCurTime();
+    srcD.mt = getCurTime();
     sortNotes(destDID, directoryIndex, noteIndex, newDirectoryIndex => {
       callback(true, newDirectoryIndex, noteIndex);
     })
@@ -680,6 +689,9 @@ export function moveDirectory(id, srcDID, destDID, directoryIndex, noteIndex, ca
         destD.d.push(id);
         srcD.d.splice(srcD.d.indexOf(id), 1);
         directoryIndex[id].p = destDID;
+        destD.mt = getCurTime();
+        srcD.mt = getCurTime();
+        directoryIndex[id].mt = getCurTime();
         sortDirectory(destDID, directoryIndex, newDirectoryIndex => {
           callback(true, newDirectoryIndex, noteIndex);
         });
