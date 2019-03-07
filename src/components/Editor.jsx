@@ -64,7 +64,6 @@ class Editor extends React.Component {
     this.handleNewEditor = this.handleNewEditor.bind(this);
     this.handleSaveNotes = this.handleSaveNotes.bind(this);
     this.handleSaveNote = this.handleSaveNote.bind(this);
-    this.handleCyclicSave = this.handleCyclicSave.bind(this);
     this.catchSaveHotkey = this.catchSaveHotkey.bind(this);
     this.handleUpdateNoteArr = this.handleUpdateNoteArr.bind(this);
     this.handleChangeNoteSignal = this.handleChangeNoteSignal.bind(this);
@@ -77,10 +76,6 @@ class Editor extends React.Component {
 
   componentWillMount() {
     this.props.dispatch(setNoteOpener(this.handleNewEditor));
-  }
-
-  componentDidMount() {
-    this.handleCyclicSave();
   }
 
   render() {
@@ -149,13 +144,6 @@ class Editor extends React.Component {
         this.props.dispatch(setActiveEditor(id));
       });
     }
-  }
-
-  handleCyclicSave() {
-    setTimeout(() => {
-      this.handleCyclicSave();
-      this.handleSaveNotes();
-    }, this.props.saveInterval);
   }
 
   handleUpdateNoteArr(noteid, value) {

@@ -72,6 +72,7 @@ class EditorCore extends React.Component {
     this.handleClick = this.handleClick.bind(this);
     this.updateTitle = this.updateTitle.bind(this);
     this.parseTags = this.parseTags.bind(this);
+    this.handleSave = this.handleSave.bind(this);
 
     this.state = {
       mac: false,       // if current os is macOS
@@ -115,8 +116,14 @@ class EditorCore extends React.Component {
     // parse tags when user change content
     let parseTags = HyperMD.debounce(() => {
       this.parseTags();
-    }, 500);
+    }, 2000);
     editor.on('change', parseTags);
+
+    // save note content automaticaly
+    let autoSaver = HyperMD.debounce(() => {
+      this.handleSave();
+    }, 1000);
+    editor.on('change', autoSaver);
     
     this.setState({
       // detect os version
@@ -226,6 +233,10 @@ class EditorCore extends React.Component {
       this.props.dispatch(updateTagIndex(newTagIndex));
       this.props.dispatch(updateTagTrie(newTagTrie));
     });
+  }
+
+  handleSave() {
+    this.props.saveNote(this.props.id);
   }
 
   handleClick() {
