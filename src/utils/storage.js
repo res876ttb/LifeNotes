@@ -867,13 +867,18 @@ export function updateTags(tags, noteid, noteIndex, tagIndex, tagTrie, callback)
       if (tagIndex[id].no.length === 1) {
         // remove keyword in trie
         tagTrie.remove(tagIndex[id].na);
+        // remove id from tag index header
+        let tmp = tagIndex['0'].t.indexOf(tagIds[i]);
+        if (tmp != -1) {
+          tagIndex['0'].t.splice(tmp, 1);
+        }
         // tag is unused. remove the entire tags
         delete tagIndex[id];
       } else {
         // this tag is used by other notes, only remove the corresponding tags
-        let ind = tagIndex[id].no.indexOf(noteid);
-        if (ind !== -1) {
-          tagIndex[id].no.splice(ind, 1);
+        let tmp = tagIndex[id].no.indexOf(noteid);
+        if (tmp !== -1) {
+          tagIndex[id].no.splice(tmp, 1);
         }
       }
     } else {
@@ -904,6 +909,13 @@ export function updateTags(tags, noteid, noteIndex, tagIndex, tagTrie, callback)
   
   // update note index
   noteIndex[noteid].ta = newTagIDs;
+
+  // update tag index header
+  for (let i in newTagIDs) {
+    if (tagIndex['0'].t.indexOf(newTagIDs[i]) === -1) {
+      tagIndex['0'].t.push(newTagIDs[i]);
+    }
+  }
 
   if (callback) callback(noteIndex, tagIndex, tagTrie);
 }
