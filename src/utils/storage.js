@@ -12,6 +12,7 @@ import PouchDBFind from 'pouchdb-find';
 import {getNewID} from './id.js';
 import {getCurTime} from './date.js';
 import {printc} from './output.js';
+import {Trie} from './Trie.js';
 
 // ===================================================================================
 // constant
@@ -19,14 +20,14 @@ const welcomeNotesId = getNewID();
 const ct = getCurTime();
 const dbname = 'LifeNoteDB';
 
-const exampleNotes = {
+const exampleNotes = { // note header
   i: welcomeNotesId,
   // content: '# Welcome to LifeNotes\n#Welcome #Example\nThis is a tutorial for LifeNotes usage.\n',
   lmt: ct, // last modified time
-  ct: ct, // created time
-  d: '0',
-  t: 'Welcome to LifeNotes',
-  ta: ['Welcome', 'Example']
+  ct: ct,  // created time
+  d: '0',  // directory where this note header exists
+  t: 'Welcome to LifeNotes', // title
+  ta: ['0', '1'] // tags id
 };
 const exampleDirectory = {
   i: 'id of this directory',                                  // id
@@ -85,7 +86,7 @@ const defaultNoteIndexingFile = {
     _id: '4',
     d: '0',
     t: 'Welcome to LifeNotes',
-    ta: ['Welcome', 'Example'],
+    ta: ['1', '2'],
     lmt: ct,
     ct: ct,
   }
@@ -425,7 +426,13 @@ function removeNoteFromDirectory(note, directoryIndex, callback) {
  * @returns {null}
  */
 function createTagsTrie(tagIndex, callback) {
-  if (callback) callback(null);
+  let trie = new Trie();
+  for (let i in tagIndex) {
+    if (i !== '0') {
+      trie.insert(tagIndex[i].na, i);
+    }
+  }
+  if (callback) callback(trie);
 }
 
 // ===================================================================================
@@ -444,34 +451,21 @@ export function initDB(callback) {
   // init pouchdb
   db = new PouchDB(dbname);
   // create index for indexing file
-  // there are 2 indexing file. The first one stores the info about notes structures;
-  // the second one stores the info about 
   db.createIndex({
     index: {fields: ['_id', 'content']}
   }).then(result => {
     printc('Index for indexing file and notes is created');
-    // create note-index file and tags file
-    // index 1: note-indexing file
-    // index 2: tags-indexing file
     createDirectoryIndexingFile(() => {
-      createNoteIndexingFile(() => {
-        createTagIndexingFile(() => {
-          createSettingFile(() => {
-            createTutorialNote(() => {
-              db.get('0').then(directoryIndex => {
-                db.get('1').then(noteIndex => {
-                  db.get('2').then(tagIndex => {
-                    createTagsTrie(tagIndex.content, tagTrie => {
-                      callback(noteIndex.content, tagIndex.content, directoryIndex.content, tagTrie);
-                    })
-                  });
-                });
-              });
-            });
-          });
-        });
-      });
-    });
+    createNoteIndexingFile(() => {
+    createTagIndexingFile(() => {
+    createSettingFile(() => {
+    createTutorialNote(() => {
+    db.get('0').then(directoryIndex => {
+    db.get('1').then(noteIndex => {
+    db.get('2').then(tagIndex => {
+    createTagsTrie(tagIndex.content, tagTrie => {
+    callback(noteIndex.content, tagIndex.content, directoryIndex.content, tagTrie);
+    });});});});});});});});});
   });
 }
 
@@ -841,10 +835,11 @@ export function cleanDB(callback) {
  * @param {string} noteid
  * @param {object} noteIndex
  * @param {object} tagIndex
- * @param {func} callback Param: noteIndex, newTagIndex
+ * @param {object} tagTrie A trie which stores the tag name & ids
+ * @param {func} callback Param: noteIndex, newTagIndex, newTagTrie
  * @returns null
  */
-export function updateTags(tags, noteid, noteIndex, tagIndex, callback) {
+export function updateTags(tags, noteid, noteIndex, tagIndex, tagTrie, callback) {
   // steps: 
   // 1. find all corresponding tags
   // 1.1. find with noteid <= used for removement
@@ -857,20 +852,60 @@ export function updateTags(tags, noteid, noteIndex, tagIndex, callback) {
   // 3. update noteIndex
 
   // find all corresponding tags
-  findTagsWithKeyword(tags, tagIndex, cts => { // corresponding tags
+  let tagIds = noteIndex[noteid].ta;
+  for (let i in tags) {
+    tagIds = tagIds.concat(tagTrie.contains(tags[i]));
+  }
 
-  });
-  findTagsWithNoteid();
-}
+  // update tags indexing file
+  let appended = [];
+  let newTagIDs = [];
+  for (let i in tagIds) {
+    let id = tagIds[i];
+    if (tags.indexOf(tagIndex[id].na) === -1) {
+      // remove unused tags & ids from tags
+      if (tagIndex[id].no.length === 1) {
+        // remove keyword in trie
+        tagTrie.remove(tagIndex[id].na);
+        // tag is unused. remove the entire tags
+        delete tagIndex[id];
+      } else {
+        // this tag is used by other notes, only remove the corresponding tags
+        let ind = tagIndex[id].no.indexOf(noteid);
+        if (ind !== -1) {
+          tagIndex[id].no.splice(ind, 1);
+        }
+      }
+    } else {
+      // append note id to corresponding tagIndex
+      let ind = tagIndex[id].no.indexOf(noteid);
+      if (ind === -1) {
+        tagIndex[id].no.push(noteid);
+      }
+      if (appended.indexOf(tagIndex[id].na) === -1) appended.push(tagIndex[id].na);
+      if (newTagIDs.indexOf(id) === -1) newTagIDs.push(id);
+    }
+  }
+  // add tags to tagIndex
+  for (let i in tags) {
+    if (appended.indexOf(tags[i]) === -1) {
+      // these tags are new. Create new tags
+      let newTag = {
+        i: getNewID(),
+        na: tags[i], 
+        no: [noteid],
+        t: []
+      }
+      tagIndex[newTag.i] = newTag;
+      newTagIDs.push(newTag.i);
+      tagTrie.insert(newTag.na, newTag.i);
+    }
+  }
+  
+  // update note index
+  noteIndex[noteid].ta = newTagIDs;
 
-/**
- * @private @func findTagsWithKeyword
- * @param {array} tags The keywords we want to search
- * @param {object} tagIndex 
- * @param {}
- */
-function findTagsWithKeyword(tags, tagIndex, callback) {
-
+  if (callback) callback(noteIndex, tagIndex, tagTrie);
 }
 
 export function runTest(noteIndex, tagIndex, callback) {

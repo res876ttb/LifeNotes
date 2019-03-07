@@ -20,6 +20,8 @@ import {
   setTitle,
   updateNoteIndex,
   updateDirectoryIndex,
+  updateTagIndex,
+  updateTagTrie
 } from '../states/mainState';
 
 // ============================================
@@ -59,6 +61,8 @@ class EditorCore extends React.Component {
     noteIndex: PropTypes.object,
     directoryIndex: PropTypes.object,
     changeNoteSignal: PropTypes.func,
+    tagTrie: PropTypes.object,
+    tagIndex: PropTypes.object,
   }
 
   constructor(props) {
@@ -217,9 +221,11 @@ class EditorCore extends React.Component {
 
     // update tags
     tags.sort();
-    // updateTags(tags, this.props.d, this.props.id, this.props.noteIndex, newNoteIndex => {
-      
-    // });
+    updateTags(tags, this.props.id, this.props.noteIndex, this.props.tagIndex, this.props.tagTrie, (newNoteIndex, newTagIndex, newTagTrie) => {
+      this.props.dispatch(updateNoteIndex(newNoteIndex));
+      this.props.dispatch(updateTagIndex(newTagIndex));
+      this.props.dispatch(updateTagTrie(newTagTrie));
+    });
   }
 
   handleClick() {
@@ -265,4 +271,6 @@ export default connect (state => ({
   titleArr: state.main.titleArr,
   noteIndex: state.main.noteIndex,
   directoryIndex: state.main.directoryIndex,
+  tagIndex: state.main.tagIndex,
+  tagTrie: state.main.tagTrie,
 }))(EditorCore);

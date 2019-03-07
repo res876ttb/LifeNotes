@@ -19,6 +19,7 @@ import {
   updateNoteIndex,
   updateTagIndex,
   updateDirectoryIndex,
+  updateTagTrie,
   setDispatcher,
 } from '../states/mainState.js';
 
@@ -72,18 +73,20 @@ class Main extends React.Component {
     if (1) {
       initDB(() => {
         cleanDB(() => {
-          initDB((noteIndex, tagIndex, directoryIndex) => {
+          initDB((noteIndex, tagIndex, directoryIndex, tagTrie) => {
             this.props.dispatch(updateNoteIndex(noteIndex));
             this.props.dispatch(updateTagIndex(tagIndex));
             this.props.dispatch(updateDirectoryIndex(directoryIndex));
+            this.props.dispatch(updateTagTrie(tagTrie));
           });
         });
       });
     } else {
-      initDB((noteIndex, tagIndex, directoryIndex) => {
+      initDB((noteIndex, tagIndex, directoryIndex, tagTrie) => {
         this.props.dispatch(updateNoteIndex(noteIndex));
         this.props.dispatch(updateTagIndex(tagIndex));
         this.props.dispatch(updateDirectoryIndex(directoryIndex));
+        this.props.dispatch(updateTagTrie(tagTrie));
       });
     }
   }

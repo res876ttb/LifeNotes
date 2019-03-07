@@ -28,6 +28,7 @@ const initMainState = {
   directoryIndex: null,
   dispatcher: null,
   noteOpener: null,
+  tagTrie: null,
 }
 
 // ============================================
@@ -167,6 +168,12 @@ export function main(state=initMainState, action) {
           activeEditorId: action.noteid,
         };
       }
+    
+    case 'main updateTagTrie':
+      return {
+        ...state,
+        tagTrie: action.trie,
+      };
 
     default:
       return state;
@@ -272,5 +279,12 @@ export function setNoteOpener(opener) {
   return {
     type: 'main setNoteOpener',
     opener: opener,
+  };
+}
+
+export function updateTagTrie(trie) {
+  return {
+    type: 'main updateTagTrie',
+    trie: trie,
   };
 }
