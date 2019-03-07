@@ -64,7 +64,7 @@ const defaultTagsIndexingFile = {
     i: '0',
     na: null,
     no: null,
-    t: ['0', '1']
+    t: ['1', '2']
   },
   '1': {
     i: '1',
@@ -279,7 +279,7 @@ function deleteNoteFromDatabase(id, callback) {
  * @returns {null}
  */
 function deleteNoteFromNoteIndexingFile(noteIndex, id, callback) {
-  delete noteIndex[id];
+  noteIndex[id] = {};
   if (callback) callback(noteIndex);
 }
 
@@ -533,15 +533,15 @@ export function deleteDirectory(id, directoryIndex, noteIndex, callback) {
     // then, delete them
     for (let n in notes) {
       deleteNoteFromDatabase(notes[n], null);
-      delete noteIndex[notes[n]];
+      noteIndex[notes[n]] = {};
     }
     for (let d in dirs) {
-      delete directoryIndex[dirs[d]];
+      directoryIndex[dirs[d]] = {};
     }
     // remove directory from parent directories
     let pid = directoryIndex[id].p;
     directoryIndex[pid].d.splice(directoryIndex[pid].d.indexOf(id), 1);
-    delete directoryIndex[id];
+    directoryIndex[id] = {};
     callback(directoryIndex, noteIndex);
   });
 }
