@@ -78,15 +78,17 @@ class SideBarTag extends React.Component {
     );
 
     return (
-      <Tooltip title={title} interactive={true} placement="right">
-        <div className='SideBarTag noselect' onClick={this.handleCollapseClick} onContextMenu={this.handleRightClick}>
-          <i className={"fab fa-slack-hash width-28 text-center " + (this.state.expand ? 'SideBarTag-hash-rotate' : '')}></i>
-          {this.props.title}
-          <div style={{paddingLeft: '20px'}}>
-            {this.props.showAllTag || this.state.expand ? children : null}
+      <div>
+        <Tooltip title={title} interactive={true} placement="right">
+          <div className='SideBarTag noselect' onClick={this.handleCollapseClick} onContextMenu={this.handleRightClick}>
+            <i className={"fab fa-slack-hash width-28 text-center " + (this.state.expand ? 'SideBarTag-hash-rotate' : '')}></i>
+            {this.props.title}
           </div>
+        </Tooltip>
+        <div style={{paddingLeft: '20px'}}>
+          {this.props.showAllTag || this.state.expand ? children : null}
         </div>
-      </Tooltip>
+      </div>
     );
   }
 
