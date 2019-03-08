@@ -1,0 +1,48 @@
+.SideBarTag {
+  border-radius: 3px;
+  height: 28px;
+  line-height: 28px;
+  transition: 150ms;
+  background-color: rgba(0, 0, 0, 0);
+  min-width: max-content;
+  max-width: 100%;
+  padding-right: 5px;
+}
+
+.SideBarTag:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.SideBarTag-hash-rotate {
+  transform: rotate(18deg);
+}
+
+.SideBarTag-tooltip {
+  font-size: 16px;
+  max-width: 300px;
+  max-height: 80vh;
+  overflow: scroll;
+  margin: 2px;
+}
+
+.SideBarTag-item {
+  border-radius: 3px;
+  height: 28px;
+  line-height: 28px;
+  transition: 150ms;
+  background-color: rgba(255,255,255, 0);
+  min-width: max-content;
+  max-width: 100%;
+  padding-right: 5px;
+}
+
+.SideBarTag-item:hover {
+  background-color: rgba(255,255,255, 0.2);
+}
+
+.SideBarTag-tooltip-title {
+  position: relative;
+  left: -5px;
+  height: 28px;
+  line-height: 28px;
+}

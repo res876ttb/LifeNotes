@@ -117,7 +117,6 @@ class SideBarFile extends React.Component {
         >
           <MenuItem onClick={this.handleNewNote}>New note</MenuItem>
           <MenuItem onClick={this.handleNewFolder}>New folder</MenuItem>
-          {/* <MenuItem onClick={this.handleRenameFile}>Rename</MenuItem> */}
           <MenuItem onClick={this.handleDeleteFile}>Delete this note</MenuItem>
         </Menu>
         <Dialog
