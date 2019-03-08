@@ -23,6 +23,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 // import react components
 import SideBarFolder from './SideBarFolder.jsx';
 import SideBarFile from './SideBarFile.jsx';
+import SideBarTag from './SideBarTag.jsx';
 
 // ============================================
 // import react redux-action
@@ -42,6 +43,9 @@ import {
   newNote,
   newDirectory,
 } from '../utils/storage.js';
+import {
+  splitOnce
+} from '../utils/string.js';
 
 // ============================================
 // import css file
@@ -84,7 +88,9 @@ class SideBar extends React.Component {
 
     this.state = {
       expendedDir: ['0'],
-      showall: false,
+      expendedTag: ['0'],
+      showAllDir: false,
+      showAllTag: false,
 
       anchorEl: null,
       anchorReference: 'anchorEl', // anchorEl, anchorPosition
@@ -115,9 +121,13 @@ class SideBar extends React.Component {
   }
 
   render() {
-    let fileList = <div></div>
+    let fileList = <div></div>;
+    let tagList = <div></div>;
     if (this.props.directoryIndex != null) {
-      fileList = this.getTreeComponents(this.props.directoryIndex['0'], 0);
+      fileList = this.getTreeComponentsFolder(this.props.directoryIndex['0'], 0);
+    }
+    if (this.props.tagIndex != null) {
+      tagList = this.getTreeComponentsTag(this.props.tagIndex['0']);
     }
 
     return (
@@ -138,6 +148,7 @@ class SideBar extends React.Component {
             left: '0px', 
             width: `${this.props.width - 20}px`
           }}></div>
+          {tagList}
         </PerfectScrollbar>
         <Menu
           anchorReference={this.state.anchorReference}
@@ -211,8 +222,8 @@ class SideBar extends React.Component {
     }
   }
 
-  getTreeComponents(directory, level) {
-    if ((this.state.expendedDir.indexOf(directory.i) == -1 && this.state.showall == false) || directory == null) {
+  getTreeComponentsFolder(directory, level) {
+    if ((this.state.expendedDir.indexOf(directory.i) == -1 && this.state.showAllDir == false) || directory == null) {
       return (<div></div>);
     }
     let dirList = [];
@@ -223,7 +234,7 @@ class SideBar extends React.Component {
         <SideBarFolder 
           directory={this.props.directoryIndex[directory.d[d]]}
           level={level}
-          child={this.getTreeComponents(this.props.directoryIndex[directory.d[d]], level + 1)}
+          child={this.getTreeComponentsFolder(this.props.directoryIndex[directory.d[d]], level + 1)}
           toggler={this.folderToggler}
           expendedDir={this.state.expendedDir}
           key={getNewID()}
@@ -242,6 +253,51 @@ class SideBar extends React.Component {
       <div style={{paddingLeft: level === 0 ? '0px' : '20px'}}>
         {dirList}
         {noteList}
+      </div>
+    )
+  }
+
+  getTreeComponentsTag(tag) {
+    if (tag === null) {
+      return <div></div>
+    }
+
+    // parse first word
+    let tagDict = {};
+    for (let i in tag.t) {
+      let splitted = splitOnce(this.props.tagIndex[tag.t[i]].na, '/');
+      let first = splitted[0];
+      let last = '';
+      if (splitted.length > 1) last = splitted[1];
+      if (first in tagDict) {
+        tagDict[first].push({
+          i: tag.t[i],
+          t: last,
+        });
+      } else {
+        tagDict[first] = [{
+          i: tag.t[i],
+          t: last,
+        }];
+      }
+    }
+
+    // create element
+    let tagList = [];
+    for (let i in tagDict) {
+      tagList.push(
+        <SideBarTag
+          key={getNewID()}
+          tagids={tagDict[i]}
+          title={i}
+          showAllTag={this.state.showAllTag}
+        />
+      );
+    }
+
+    return (
+      <div style={{marginTop: '40px'}}>
+        {tagList}
       </div>
     )
   }
