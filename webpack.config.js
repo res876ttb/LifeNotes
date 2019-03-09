@@ -6,6 +6,7 @@ const distPath = path.resolve(__dirname, 'dist');
 module.exports = {
   context: srcPath,
   mode: 'development',
+  /* mode: 'production', */
   resolve: {
     alias: {
       states: path.resolve(srcPath, 'states'),

@@ -1,6 +1,6 @@
 {
   "name": "LifeNotes",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A web-based markdown editor",
   "main": "main.js",
   "repository": "https://github.com/res876ttb/LifePack.git",
