@@ -16,11 +16,8 @@ import Editor from './Editor.jsx';
 // import react redux-action
 import {
   setSideBarWidth,
-  updateNoteIndex,
-  updateTagIndex,
-  updateDirectoryIndex,
-  updateTagTrie,
   setDispatcher,
+  initIndex,
 } from '../states/mainState.js';
 
 // ============================================
@@ -70,23 +67,17 @@ class Main extends React.Component {
 
   componentWillMount() {
     this.props.dispatch(setDispatcher(this.props.dispatch));
-    if (1) {
+    if (0) {
       initDB(() => {
         cleanDB(() => {
           initDB((noteIndex, tagIndex, directoryIndex, tagTrie) => {
-            this.props.dispatch(updateNoteIndex(noteIndex));
-            this.props.dispatch(updateTagIndex(tagIndex));
-            this.props.dispatch(updateDirectoryIndex(directoryIndex));
-            this.props.dispatch(updateTagTrie(tagTrie));
+            this.props.dispatch(initIndex(directoryIndex, noteIndex, tagIndex, tagTrie));
           });
         });
       });
     } else {
       initDB((noteIndex, tagIndex, directoryIndex, tagTrie) => {
-        this.props.dispatch(updateNoteIndex(noteIndex));
-        this.props.dispatch(updateTagIndex(tagIndex));
-        this.props.dispatch(updateDirectoryIndex(directoryIndex));
-        this.props.dispatch(updateTagTrie(tagTrie));
+        this.props.dispatch(initIndex(directoryIndex, noteIndex, tagIndex, tagTrie));
       });
     }
   }

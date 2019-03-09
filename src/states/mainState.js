@@ -19,15 +19,18 @@ const initMainState = {
   showToolBar: false,
   showTabBar: true,
   activeEditorId: null,
-  editorArr: {},
+
+  dispatcher: null,
+  noteOpener: null,
+
   activeOrder: [],
+  editorArr: {},
   titleArr: {},
   tabArr: [],
+
   noteIndex: null,
   tagIndex: null,
   directoryIndex: null,
-  dispatcher: null,
-  noteOpener: null,
   tagTrie: null,
 }
 
@@ -175,6 +178,15 @@ export function main(state=initMainState, action) {
         tagTrie: action.trie,
       };
 
+    case 'main initIndex':
+      return {
+        ...state,
+        directoryIndex: action.directoryIndex,
+        noteIndex: action.noteIndex,
+        tagIndex: action.tagIndex,
+        tagTrie: action.tagTrie,
+      }
+
     default:
       return state;
   }
@@ -286,5 +298,15 @@ export function updateTagTrie(trie) {
   return {
     type: 'main updateTagTrie',
     trie: trie,
+  };
+}
+
+export function initIndex(directoryIndex, noteIndex, tagIndex, tagTrie) {
+  return {
+    type: 'main initIndex', 
+    directoryIndex: directoryIndex,
+    noteIndex: noteIndex,
+    tagIndex: tagIndex,
+    tagTrie: tagTrie,
   };
 }

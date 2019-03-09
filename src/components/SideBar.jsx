@@ -70,9 +70,6 @@ class SideBar extends React.Component {
   constructor(props) {
     super(props);
 
-    // this.handleMouseDown = this.handleMouseDown.bind(this);
-    // this.handleMouseUp = this.handleMouseUp.bind(this);
-    // this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.folderToggler = this.folderToggler.bind(this);
 
@@ -123,10 +120,11 @@ class SideBar extends React.Component {
   render() {
     let fileList = <div></div>;
     let tagList = <div></div>;
-    if (this.props.directoryIndex != null) {
+    if (this.props.directoryIndex) {
+      console.log(this.props.directoryIndex);
       fileList = this.getTreeComponentsFolder(this.props.directoryIndex['0'], 0);
     }
-    if (this.props.tagIndex != null) {
+    if (this.props.tagIndex) {
       tagList = this.getTreeComponentsTag(this.props.tagIndex['0']);
     }
 
@@ -223,7 +221,8 @@ class SideBar extends React.Component {
   }
 
   getTreeComponentsFolder(directory, level) {
-    if ((this.state.expendedDir.indexOf(directory.i) == -1 && this.state.showAllDir == false) || directory == null) {
+    console.log(directory);
+    if (directory === null || directory === undefined || (this.state.expendedDir.indexOf(directory.i) === -1 && this.state.showAllDir === false)) {
       return (<div></div>);
     }
     let dirList = [];

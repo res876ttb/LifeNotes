@@ -116,7 +116,6 @@ class SideBarTag extends React.Component {
   }
 
   handleOpenNote(id, dir) {
-    console.log(id, dir);
     this.props.dispatch(openNote(id, dir));
   }
 
@@ -126,20 +125,23 @@ class SideBarTag extends React.Component {
   }
 
   getNotes() {
+    if (this.props.noteIndex === null || this.props.tagIndex === null) return [];
     let notes = [];
     for (let i in this.props.tagids) {
       let tagHeader = this.props.tagIndex[this.props.tagids[i].i];
       for (let j in tagHeader.no) {
         let noteHeader = this.props.noteIndex[tagHeader.no[j]];
-        notes.push(
-          <div className='SideBarTag-item noselect' key={getNewID()} onClick={e => {
-            e.stopPropagation();
-            this.handleOpenNote(noteHeader._id, noteHeader.d);
-          }}>
-            <i className="fas fa-file-alt width-28 text-center"></i>
-            {noteHeader.t}
-          </div>
-        )
+        if (noteHeader) {
+          notes.push(
+            <div className='SideBarTag-item noselect' key={getNewID()} onClick={e => {
+              e.stopPropagation();
+              this.handleOpenNote(noteHeader._id, noteHeader.d);
+            }}>
+              <i className="fas fa-file-alt width-28 text-center"></i>
+              {noteHeader.t}
+            </div>
+          )
+        }
       }
     }
 

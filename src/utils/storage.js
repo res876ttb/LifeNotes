@@ -108,19 +108,19 @@ var db;
 function createDirectoryIndexingFile(callback) {
   db.find({
     selector: {$and: [
-      {'_id': {$eq: '0'}}
+      {'_id': {$eq: '1'}}
     ]}
   }).then(result => {
     if (result.docs.length == 0) {
       db.put({
-        _id: '0',
+        _id: '1',
         content: defaultDirectoryIndexingFile,
       }).then(result => {
         printc('Directory-indexing file is created');
         callback();
       });
     } else {
-      printc('Note-indexing file has been created');
+      printc('Directory-indexing file has been created');
       callback();
     }
   })
@@ -135,12 +135,12 @@ function createDirectoryIndexingFile(callback) {
 function createNoteIndexingFile(callback) {
   db.find({
     selector: {$and: [
-      {'_id': {$eq: '1'}}
+      {'_id': {$eq: '0'}}
     ]}
   }).then(result => {
     if (result.docs.length == 0) {
       db.put({
-        _id: '1', 
+        _id: '0', 
         content: defaultNoteIndexingFile
       }).then(result => {
         printc('Note-indexing file is created');
@@ -461,8 +461,8 @@ export function initDB(callback) {
     createTagIndexingFile(() => {
     createSettingFile(() => {
     createTutorialNote(() => {
-    db.get('0').then(directoryIndex => {
-    db.get('1').then(noteIndex => {
+    db.get('0').then(noteIndex => {
+    db.get('1').then(directoryIndex => {
     db.get('2').then(tagIndex => {
     createTagsTrie(tagIndex.content, tagTrie => {
     callback(noteIndex.content, tagIndex.content, directoryIndex.content, tagTrie);
