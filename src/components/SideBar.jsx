@@ -16,6 +16,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Fab from '@material-ui/core/Fab';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
@@ -30,6 +32,9 @@ import SideBarTag from './SideBarTag.jsx';
 import {
   updateNoteIndex, 
   updateDirectoryIndex,
+  updateTagIndex,
+  updateTagTrie,
+  initIndex,
 } from '../states/mainState.js';
 
 // ============================================
@@ -42,6 +47,8 @@ import {
   moveNote,
   newNote,
   newDirectory,
+  cleanDB, 
+  initDB,
 } from '../utils/storage.js';
 import {
   splitOnce
@@ -80,6 +87,7 @@ class SideBar extends React.Component {
     this.handleDialogContentChange = this.handleDialogContentChange.bind(this);
     this.handleDialogEnterKey = this.handleDialogEnterKey.bind(this);
     this.handleDialogClose = this.handleDialogClose.bind(this);
+    this.handleResetDB = this.handleResetDB.bind(this);
 
     this.handleDrop = this.handleDrop.bind(this);
 
@@ -121,7 +129,6 @@ class SideBar extends React.Component {
     let fileList = <div></div>;
     let tagList = <div></div>;
     if (this.props.directoryIndex) {
-      console.log(this.props.directoryIndex);
       fileList = this.getTreeComponentsFolder(this.props.directoryIndex['0'], 0);
     }
     if (this.props.tagIndex) {
@@ -138,16 +145,29 @@ class SideBar extends React.Component {
       >
         <PerfectScrollbar>
           {fileList}
-          <div style={{
-            height: '30px', 
-            borderBottom: '2px dotted rgb(150,150,150)',
-            margin: '0px 14px', 
-            position: 'fixed',
-            left: '0px', 
-            width: `${this.props.width - 20}px`
-          }}></div>
+          <div style={{margin: '0px 10px', width: `${this.props.width - 20}px`, height: '30px'}}>
+            <div style={{borderBottom: '2px dotted rgb(150,150,150)', height: '15px'}}></div>
+          </div>
           {tagList}
+          <div style={{height: '60px'}}></div>
         </PerfectScrollbar>
+        {/* Reset button, used for debugging */}
+        <div style={{position: 'fixed', bottom: '0px', width: `${this.props.width}px`, textAlign: 'center'}}>
+          <div style={{margin: '0px auto 10px auto'}}>
+            <Tooltip title='This buttom will remove all data in database immediately. Note that this action cannot be undone.'>
+              <Fab
+                variant="extended"
+                size="medium"
+                color="primary"
+                aria-label="Add"
+                onClick={this.handleResetDB}
+              >
+                Reset Database
+              </Fab>
+            </Tooltip>
+          </div>
+        </div>
+
         <Menu
           anchorReference={this.state.anchorReference}
           anchorEl={this.state.anchorEl}
@@ -221,7 +241,6 @@ class SideBar extends React.Component {
   }
 
   getTreeComponentsFolder(directory, level) {
-    console.log(directory);
     if (directory === null || directory === undefined || (this.state.expendedDir.indexOf(directory.i) === -1 && this.state.showAllDir === false)) {
       return (<div></div>);
     }
@@ -295,7 +314,7 @@ class SideBar extends React.Component {
     }
 
     return (
-      <div style={{marginTop: '40px'}}>
+      <div>
         {tagList}
       </div>
     )
@@ -416,6 +435,19 @@ class SideBar extends React.Component {
     } else {
       console.error('Something goes wrong! type, id or ppath is null.');
     }
+  }
+
+  handleResetDB() {
+    cleanDB(() => {
+      initDB((noteIndex, tagIndex, directoryIndex, tagTrie) => {
+        this.props.dispatch(initIndex(directoryIndex, noteIndex, tagIndex, tagTrie));
+        this.props.dispatch(updateNoteIndex(noteIndex));
+        this.props.dispatch(updateTagIndex(tagIndex));
+        this.props.dispatch(updateDirectoryIndex(directoryIndex));
+        this.props.dispatch(updateTagTrie(tagTrie));
+        console.log('DB is reset!!');
+      })
+    });
   }
 }
 

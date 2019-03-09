@@ -442,7 +442,7 @@ function createTagsTrie(tagIndex, callback) {
 /**
  * @public @func initDB
  * @desc Initialize the database
- * @param {func} callback Params: noteIndex, tagIndex, directoryIndex
+ * @param {func} callback Params: noteIndex, tagIndex, directoryIndex, tagTrie
  * @returns {null} 
  */
 export function initDB(callback) {
@@ -828,7 +828,7 @@ export function updateTagIndexFile(tagIndex) {
 /**
  * @public @func cleanDB
  * @desc Cleanup the database
- * @param {func} callback This function will be called after cleaning the database
+ * @param {func} callback Param: None
  * @returns null
  */
 export function cleanDB(callback) {
