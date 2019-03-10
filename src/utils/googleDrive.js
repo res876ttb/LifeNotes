@@ -28,14 +28,15 @@ const clientId = 'U2FsdGVkX1+cF4ksZyItUk0D6Fci9RwU2NwmV2iC8vz3c6xS8RYwdlOTsVT8Pz
 /**
  * @public @func initGDAPI
  * @param {func} updateSigninStatus Param: status
+ * @param {string} key
  * @param {func} callback Param: None
  * @returns {null}
  */
-export function initGDAPI(updateSigninStatus, callback) {
+export function initGDAPI(updateSigninStatus, key, callback) {
   gapi.load('client:auth2', () => {
     gapi.client.init({
-      apiKey: AES.decrypt(apiKey, 'secret key 123').toString(UTF8),
-      clientId: AES.decrypt(clientId, 'secret key 123').toString(UTF8),
+      apiKey: AES.decrypt(apiKey, key).toString(UTF8),
+      clientId: AES.decrypt(clientId, key).toString(UTF8),
       discoveryDocs: null,
       scope: scope,
     }).then(function () {

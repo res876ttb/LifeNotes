@@ -87,7 +87,7 @@ class Main extends React.Component {
   componentDidMount() {
     initGDAPI(isSignedIn => {
       this.props.dispatch(updateSignedInStatus(isSignedIn));
-    }, () => {
+    }, 'secret key 123', () => {
       runGoogleDriveAPITest(() => {
         console.log('API testing done.');
       });
