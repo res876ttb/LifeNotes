@@ -48,13 +48,8 @@ class UserProfile extends React.Component {
 
   render() {
     return (
-      <div>
-        <Tooltip title={(
-          <div>
-            Logout. <br/>
-            This action will make you unable to synchronize your notes with google drive.
-          </div>
-        )} placement='right'>
+      <div className='noSelect'>
+        <Tooltip title={'Logout'} placement='right'>
           <div 
             className='UserProfile-userImage text-center' 
             style={{backgroundImage: `url("${this.props.userImageUrl}"`}}
