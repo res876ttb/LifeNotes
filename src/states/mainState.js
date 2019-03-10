@@ -32,6 +32,8 @@ const initMainState = {
   tagIndex: null,
   directoryIndex: null,
   tagTrie: null,
+
+  GDSignedIn: false,
 }
 
 // ============================================
@@ -187,6 +189,12 @@ export function main(state=initMainState, action) {
         tagTrie: action.tagTrie,
       }
 
+    case 'main updateSignedInStatus':
+      return {
+        ...state,
+        GDSignedIn: action.isSignedIn,
+      };
+
     default:
       return state;
   }
@@ -308,5 +316,12 @@ export function initIndex(directoryIndex, noteIndex, tagIndex, tagTrie) {
     noteIndex: noteIndex,
     tagIndex: tagIndex,
     tagTrie: tagTrie,
+  };
+}
+
+export function updateSignedInStatus(isSignedIn) {
+  return {
+    type: 'main updateSignedInStatus',
+    isSignedIn: isSignedIn,
   };
 }

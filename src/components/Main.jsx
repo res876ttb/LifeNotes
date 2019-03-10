@@ -18,6 +18,7 @@ import {
   setSideBarWidth,
   setDispatcher,
   initIndex,
+  updateSignedInStatus,
 } from '../states/mainState.js';
 
 // ============================================
@@ -32,7 +33,8 @@ import {
   printc 
 } from '../utils/output';
 import { 
-  runGoogleDriveAPITest 
+  initGDAPI,
+  runGoogleDriveAPITest,
 } from '../utils/googleDrive';
 
 // ============================================
@@ -83,9 +85,13 @@ class Main extends React.Component {
   }
 
   componentDidMount() {
-    runGoogleDriveAPITest(() => {
-      console.log('API testing done.');
-    });
+    initGDAPI(isSignedIn => {
+      this.props.dispatch(updateSignedInStatus(isSignedIn));
+    }, () => {
+      runGoogleDriveAPITest(() => {
+        console.log('API testing done.');
+      });
+    })
   }
 
   render() {

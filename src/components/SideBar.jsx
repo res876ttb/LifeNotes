@@ -53,11 +53,17 @@ import {
 import {
   splitOnce
 } from '../utils/string.js';
+import {
+  signInWithGoogle,
+  signOutGoogle,
+  getGoogleUserProfile,
+} from '../utils/googleDrive.js';
 
 // ============================================
 // import css file
 import '../styles/SideBar.css';
 import '../../vendor/react-perfect-scrollbar.min.css';
+import { generateKeyPair } from 'crypto';
 
 // ============================================
 // constants
@@ -72,6 +78,7 @@ class SideBar extends React.Component {
     noteIndex: PropTypes.object,
     tagIndex: PropTypes.object,
     directoryIndex: PropTypes.object,
+    GDSignedIn: PropTypes.bool,
   }
 
   constructor(props) {
@@ -90,6 +97,9 @@ class SideBar extends React.Component {
     this.handleResetDB = this.handleResetDB.bind(this);
 
     this.handleDrop = this.handleDrop.bind(this);
+
+    this.handleSignInWithGoogle = this.handleSignInWithGoogle.bind(this);
+    this.handleSignOutGoogle = this.handleSignOutGoogle.bind(this);
 
     this.state = {
       expendedDir: ['0'],
@@ -149,23 +159,33 @@ class SideBar extends React.Component {
             <div style={{borderBottom: '2px dotted rgb(150,150,150)', height: '15px'}}></div>
           </div>
           {tagList}
-          <div style={{height: '60px'}}></div>
+          <div style={{height: '120px'}}></div>
         </PerfectScrollbar>
         {/* Reset button, used for debugging */}
-        <div style={{position: 'fixed', bottom: '0px', width: `${this.props.width}px`, textAlign: 'center'}}>
-          <div style={{margin: '0px auto 10px auto'}}>
+        <div style={{position: 'fixed', bottom: '60px', width: `${this.props.width}px`, textAlign: 'center'}}>
+          <div style={{margin: '0px auto 0px auto'}}>
             <Tooltip title='This buttom will remove all data in database immediately. Note that this action cannot be undone.'>
-              <Fab
-                variant="extended"
-                size="medium"
-                color="primary"
-                aria-label="Add"
-                onClick={this.handleResetDB}
-              >
+              <Button variant="contained" color="secondary" onClick={this.handleResetDB}>
                 Reset Database
-              </Fab>
+              </Button>
             </Tooltip>
           </div>
+        </div>
+        {/* Sign-in button */}
+        <div style={{position: 'fixed', bottom: '10px', width: `${this.props.width}px`, textAlign: 'center'}}>
+          {this.props.GDSignedIn ? 
+            <div>
+              <Button variant="contained" color="primary" onClick={this.handleSignOutGoogle}>
+                <i className="fas fa-sign-out-alt width-28 text-center"></i>
+                Sign Out
+              </Button>
+            </div> :
+            <div style={{margin: '0px auto 0px auto'}}>
+              <Button variant="contained" color="primary" onClick={this.handleSignInWithGoogle}>
+                <i className="fab fa-google width-28 text-center"></i>
+                Sign in
+              </Button>
+            </div> }
         </div>
 
         <Menu
@@ -223,6 +243,19 @@ class SideBar extends React.Component {
         ></div>
       </div>
     );
+  }
+
+  handleSignInWithGoogle() {
+    signInWithGoogle(r => {
+      // get user profile
+      getGoogleUserProfile((userName, userImageUrl) => {
+        console.log(userName, userImageUrl);
+      });
+    });
+  }
+
+  handleSignOutGoogle() {
+    signOutGoogle();
   }
 
   folderToggler(id) {
@@ -456,4 +489,5 @@ export default connect (state => ({
   noteIndex: state.main.noteIndex,
   tagIndex: state.main.tagIndex,
   directoryIndex: state.main.directoryIndex,
+  GDSignedIn: state.main.GDSignedIn,
 }))(SideBar);
