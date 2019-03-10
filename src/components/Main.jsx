@@ -19,6 +19,7 @@ import {
   setDispatcher,
   initIndex,
   updateSignedInStatus,
+  updateUserProfile,
 } from '../states/mainState.js';
 
 // ============================================
@@ -35,6 +36,7 @@ import {
 import { 
   initGDAPI,
   runGoogleDriveAPITest,
+  getGoogleUserProfile,
 } from '../utils/googleDrive';
 
 // ============================================
@@ -87,6 +89,11 @@ class Main extends React.Component {
   componentDidMount() {
     initGDAPI(isSignedIn => {
       this.props.dispatch(updateSignedInStatus(isSignedIn));
+      if (isSignedIn) {
+        getGoogleUserProfile((userName, userImageUrl) => {
+          this.props.dispatch(updateUserProfile(userName, userImageUrl));
+        });
+      }
     }, 'secret key 123', () => {
       runGoogleDriveAPITest(() => {
         console.log('API testing done.');

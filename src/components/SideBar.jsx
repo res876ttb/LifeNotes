@@ -16,7 +16,6 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Fab from '@material-ui/core/Fab';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -26,6 +25,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import SideBarFolder from './SideBarFolder.jsx';
 import SideBarFile from './SideBarFile.jsx';
 import SideBarTag from './SideBarTag.jsx';
+import UserProfile from './UserProfile.jsx';
 
 // ============================================
 // import react redux-action
@@ -35,6 +35,8 @@ import {
   updateTagIndex,
   updateTagTrie,
   initIndex,
+  updateUserProfile,
+  resetUserProfile,
 } from '../states/mainState.js';
 
 // ============================================
@@ -67,6 +69,7 @@ import { generateKeyPair } from 'crypto';
 
 // ============================================
 // constants
+
 
 // ============================================
 // react components
@@ -159,12 +162,12 @@ class SideBar extends React.Component {
             <div style={{borderBottom: '2px dotted rgb(150,150,150)', height: '15px'}}></div>
           </div>
           {tagList}
-          <div style={{height: '120px'}}></div>
+          <div style={{height: '130px'}}></div>
         </PerfectScrollbar>
         {/* Reset button, used for debugging */}
-        <div style={{position: 'fixed', bottom: '60px', width: `${this.props.width}px`, textAlign: 'center'}}>
+        <div style={{position: 'fixed', bottom: '80px', width: `${this.props.width}px`, textAlign: 'center'}}>
           <div style={{margin: '0px auto 0px auto'}}>
-            <Tooltip title='This buttom will remove all data in database immediately. Note that this action cannot be undone.'>
+            <Tooltip title='This buttom will remove all data in database immediately. Note that this action cannot be undone.' placement='right'>
               <Button variant="contained" color="secondary" onClick={this.handleResetDB}>
                 Reset Database
               </Button>
@@ -172,20 +175,19 @@ class SideBar extends React.Component {
           </div>
         </div>
         {/* Sign-in button */}
-        <div style={{position: 'fixed', bottom: '10px', width: `${this.props.width}px`, textAlign: 'center'}}>
+        <div style={{position: 'fixed', bottom: '10px', height: '40px', width: `${this.props.width}px`, textAlign: 'center', borderTop: 'solid 1px rgb(200, 200, 200)', paddingTop: '10px'}}>
           {this.props.GDSignedIn ? 
-            <div>
-              <Button variant="contained" color="primary" onClick={this.handleSignOutGoogle}>
-                <i className="fas fa-sign-out-alt" style={{paddingRight: '6px'}}></i>
-                Sign Out
-              </Button>
-            </div> :
+            <UserProfile
+              handleSignOutGoogle={this.handleSignOutGoogle}
+              width={this.props.width}
+            /> :
             <div style={{margin: '0px auto 0px auto'}}>
               <Button variant="contained" color="primary" onClick={this.handleSignInWithGoogle}>
                 <i className="fab fa-google" style={{paddingRight: '6px'}}></i>
                 Sign in
               </Button>
-            </div> }
+            </div> 
+          }
         </div>
 
         <Menu
@@ -249,13 +251,14 @@ class SideBar extends React.Component {
     signInWithGoogle(r => {
       // get user profile
       getGoogleUserProfile((userName, userImageUrl) => {
-        console.log(userName, userImageUrl);
+        this.props.dispatch(updateUserProfile(userName, userImageUrl));
       });
     });
   }
 
   handleSignOutGoogle() {
     signOutGoogle();
+    this.props.dispatch(resetUserProfile());
   }
 
   folderToggler(id) {

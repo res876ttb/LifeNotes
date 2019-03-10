@@ -34,7 +34,12 @@ const initMainState = {
   tagTrie: null,
 
   GDSignedIn: false,
+  userName: defaultUserName,
+  userImageUrl: defaultUserImageUrl,
 }
+
+const defaultUserName = 'Unknown';
+const defaultUserImageUrl = 'images/QuestionMark.png';
 
 // ============================================
 // reducer
@@ -195,6 +200,20 @@ export function main(state=initMainState, action) {
         GDSignedIn: action.isSignedIn,
       };
 
+    case 'main updateUserProfile':
+      return {
+        ...state,
+        userName: action.userName,
+        userImageUrl: action.userImageUrl,
+      };
+
+    case 'main resetUserProfile':
+      return {
+        ...state,
+        userName: defaultUserName,
+        userImageUrl: defaultUserImageUrl,
+      };
+
     default:
       return state;
   }
@@ -323,5 +342,19 @@ export function updateSignedInStatus(isSignedIn) {
   return {
     type: 'main updateSignedInStatus',
     isSignedIn: isSignedIn,
+  };
+}
+
+export function updateUserProfile(userName, userImageUrl) {
+  return {
+    type: 'main updateUserProfile',
+    userName: userName,
+    userImageUrl: userImageUrl,
+  };
+}
+
+export function resetUserProfile() {
+  return {
+    type: 'main resetUserProfile',
   };
 }
