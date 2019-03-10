@@ -176,13 +176,13 @@ class SideBar extends React.Component {
           {this.props.GDSignedIn ? 
             <div>
               <Button variant="contained" color="primary" onClick={this.handleSignOutGoogle}>
-                <i className="fas fa-sign-out-alt width-28 text-center"></i>
+                <i className="fas fa-sign-out-alt" style={{paddingRight: '6px'}}></i>
                 Sign Out
               </Button>
             </div> :
             <div style={{margin: '0px auto 0px auto'}}>
               <Button variant="contained" color="primary" onClick={this.handleSignInWithGoogle}>
-                <i className="fab fa-google width-28 text-center"></i>
+                <i className="fab fa-google" style={{paddingRight: '6px'}}></i>
                 Sign in
               </Button>
             </div> }

@@ -5,13 +5,14 @@
 
 // ===================================================================================
 // import
-
+const AES = require("crypto-js/aes");
+const UTF8 = require('crypto-js/enc-utf8');
 
 // ===================================================================================
 // constant
 const scope = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.profile';
-const apiKey = 'AIzaSyCBNvLSlqKjmCPEufgh97XTFeOIn4v3d68';
-const clientId = '695448691018-v7q04dii2ekr2fuq8tirtk8dg7q619hb.apps.googleusercontent.com';
+const apiKey = 'U2FsdGVkX1/NTggGo6ANcV+zCHP6C4RWP6gL0KhEgjGm+ksIkfcpldR3UaZKA6eHwxn1h4yJMuo65UMI7A2Jsw==';
+const clientId = 'U2FsdGVkX1+cF4ksZyItUk0D6Fci9RwU2NwmV2iC8vz3c6xS8RYwdlOTsVT8PzuW3cbWVNKtLLhyaXCy7N3sW7WildoKOfwZJBjlzKKD4/DgGQwMs4afiTgWmVln+U5E';
 
 // ===================================================================================
 // global variable
@@ -33,8 +34,8 @@ const clientId = '695448691018-v7q04dii2ekr2fuq8tirtk8dg7q619hb.apps.googleuserc
 export function initGDAPI(updateSigninStatus, callback) {
   gapi.load('client:auth2', () => {
     gapi.client.init({
-      apiKey: apiKey,
-      clientId: clientId,
+      apiKey: AES.decrypt(apiKey, 'secret key 123').toString(UTF8),
+      clientId: AES.decrypt(clientId, 'secret key 123').toString(UTF8),
       discoveryDocs: null,
       scope: scope,
     }).then(function () {

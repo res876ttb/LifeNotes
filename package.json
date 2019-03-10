@@ -15,6 +15,7 @@
     "@material-ui/core": "^3.9.2",
     "bootstrap": "^4.3.1",
     "codemirror": "^5.44.0",
+    "crypto-js": "^3.1.9-1",
     "flowchart.js": "^1.11.3",
     "hypermd": "^0.3.11",
     "idb": "^2.1.3",
