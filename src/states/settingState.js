@@ -14,6 +14,7 @@ const initSettingState = {
   defaultNotePath: '1',
   saveInterval: 60000, // ms
   autoSync: true,
+  recordExpandingState: true,
 };
 
 // ============================================
@@ -36,6 +37,12 @@ export function setting(state=initSettingState, action) {
       return {
         ...state,
         autoSync: action.autoSync
+      };
+
+    case 'setting setRecordExpandingState':
+      return {
+        ...state,
+        recordExpandingState: action.recordExpandingState,
       };
       
     default:
@@ -63,5 +70,12 @@ export function setAutoSync(autoSync) {
   return {
     type: 'setting setAutoSync',
     autoSync: autoSync,
+  };
+}
+
+export function setRecordExpandingState(recordExpandingState) {
+  return {
+    type: 'setting setRecordExpandingState',
+    recordExpandingState: recordExpandingState
   };
 }

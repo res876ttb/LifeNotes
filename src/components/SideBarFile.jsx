@@ -16,6 +16,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Tooltip from '@material-ui/core/Tooltip';
 
 // ============================================
 // import react components
@@ -52,6 +53,8 @@ class SideBarFile extends React.Component {
     note: PropTypes.object,
     noteIndex: PropTypes.object,
     directoryIndex: PropTypes.object,
+    width: PropTypes.number,
+    level: PropTypes.number,
   }
 
   constructor(props) {
@@ -105,8 +108,12 @@ class SideBarFile extends React.Component {
         onDragOver={e => {e.preventDefault();}}
         onDrop={this.handleDrop}
       >
-        <i className="fas fa-file-alt width-28 text-center"></i>
-        {this.props.note.t}
+        <Tooltip title={this.props.note.t} placement='right'>
+          <div className='SideBarElement-content' style={{width: `${this.props.width - this.props.level * 20 - 4}px`}}>
+            <i className="fas fa-file-alt width-28 text-center"></i>
+            {this.props.note.t}
+          </div>
+        </Tooltip>
         <Menu
           anchorReference={this.state.anchorReference}
           anchorEl={this.state.anchorEl}

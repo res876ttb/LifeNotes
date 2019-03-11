@@ -16,6 +16,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Tooltip from '@material-ui/core/Tooltip';
 
 // ============================================
 // import react components
@@ -55,6 +56,7 @@ class SideBarFolder extends React.Component {
     toggler: PropTypes.func,
     expendedDir: PropTypes.array,
     noteIndex: PropTypes.object,
+    width: PropTypes.number,
   }
 
   constructor(props) {
@@ -112,11 +114,16 @@ class SideBarFolder extends React.Component {
           draggable={true}
           onDragStart={this.handleDragStart}
         >
-          {this.props.expendedDir.indexOf(this.props.directory.i) === -1 ?
-            <i className="far fa-folder width-28 text-center"></i> :
-            <i className="far fa-folder-open width-28 text-center"></i>
-          }
-          {this.props.directory.na}
+          <Tooltip title={this.props.directory.na} placement='right'>
+            <div className='SideBarElement-content' style={{maxWidth: `${this.props.width - this.props.level * 20 - 4}px`}}>
+              {this.props.expendedDir.indexOf(this.props.directory.i) === -1 ?
+                <i className="far fa-folder width-28 text-center"></i> :
+                <i className="far fa-folder-open width-28 text-center"></i>
+              }
+              {this.props.directory.na}
+            </div>  
+          </Tooltip>
+          
           <Menu
             anchorReference={this.state.anchorReference}
             anchorEl={this.state.anchorEl}

@@ -31,6 +31,8 @@ class SideBarTagPlum extends React.Component {
     tagids: PropTypes.array,
     title: PropTypes.string,
     showAllTag: PropTypes.bool,
+    level: PropTypes.number,
+    width: PropTypes.number,
   }
 
   constructor(props) {
@@ -48,6 +50,8 @@ class SideBarTagPlum extends React.Component {
           tagids={this.props.tagids}
           title={this.props.title}
           showAllTag={this.props.showAllTag}
+          level={this.props.level + 1}
+          width={this.props.width}
         />
       </div>
     );

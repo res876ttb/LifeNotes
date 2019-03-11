@@ -4,9 +4,11 @@
   line-height: 28px;
   transition: 150ms;
   background-color: rgba(0, 0, 0, 0);
-  min-width: max-content;
-  max-width: 100%;
   padding-right: 5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-x: hidden;
+  position: relative;
 }
 
 .SideBarTag:hover {
@@ -15,14 +17,6 @@
 
 .SideBarTag-hash-rotate {
   transform: rotate(18deg);
-}
-
-.SideBarTag-tooltip {
-  font-size: 16px;
-  max-width: 300px;
-  max-height: 80vh;
-  overflow: scroll;
-  margin: 2px;
 }
 
 .SideBarTag-item {
@@ -41,9 +35,43 @@
   cursor: pointer;
 }
 
+.SideBarTag-tooltip {
+  font-size: 16px;
+  max-width: 300px;
+  max-height: 80vh;
+  overflow: scroll;
+  margin: 2px;
+}
+
 .SideBarTag-tooltip-title {
-  position: relative;
-  left: -5px;
-  height: 28px;
+  min-height: 28px;
   line-height: 28px;
+}
+
+.SideBarTag-tooltip-title-text {
+  display: inline;
+  white-space: nowrap;
+}
+
+.SideBarTag-indicator {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  color: rgba(0, 0, 0, 0);
+  transition: 150ms;
+  font-size: 12px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px !important;
+  border-radius: 100%;
+}
+
+.SideBarTag:hover .SideBarTag-indicator {
+  color: rgba(0, 0, 0, 1);
+  background-color: rgb(245, 245, 245);
+}
+
+.SideBarTag-indicator-arrow {
+  position: relative;
+  top: 1px;
 }

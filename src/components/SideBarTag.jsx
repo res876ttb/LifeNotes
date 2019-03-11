@@ -41,6 +41,8 @@ class SideBarTag extends React.Component {
     showAllTag: PropTypes.bool,
     tagIndex: PropTypes.object,
     noteIndex: PropTypes.object,
+    level: PropTypes.number,
+    width: PropTypes.number,
   }
 
   constructor(props) {
@@ -69,9 +71,11 @@ class SideBarTag extends React.Component {
     let notes = this.getNotes();
     let title = (
       <div className='SideBarTag-tooltip'>
-        <div className="text-center SideBarTag-tooltip-title">
-          <i className={"fab fa-slack-hash width-28 text-center "}></i>
-          {this.props.title}
+        <div className="SideBarTag-tooltip-title">
+          <p className="SideBarTag-tooltip-title-text">
+            <i className={"fab fa-slack-hash width-28 text-center "}></i>
+            {this.props.title}
+          </p>
         </div>
         {notes}
       </div>
@@ -80,9 +84,12 @@ class SideBarTag extends React.Component {
     return (
       <div>
         <Tooltip title={title} interactive={true} placement="right">
-          <div className='SideBarTag noselect' onClick={this.handleCollapseClick} onContextMenu={this.handleRightClick}>
+          <div className='SideBarTag noselect' onClick={this.handleCollapseClick} onContextMenu={this.handleRightClick} style={{width: `${this.props.width - this.props.level * 20 - 4}px`}}>
             <i className={"fab fa-slack-hash width-28 text-center " + (this.state.expand ? 'SideBarTag-hash-rotate' : '')}></i>
             {this.props.title}
+            <div className="SideBarTag-indicator text-center">
+              <i className="fas fa-arrow-right SideBarTag-indicator-arrow"></i>
+            </div>
           </div>
         </Tooltip>
         <div style={{paddingLeft: '20px'}}>
@@ -182,6 +189,8 @@ class SideBarTag extends React.Component {
           tagids={tagDict[i]}
           title={i}
           showAllTag={this.props.showAllTag}
+          level={this.props.level}
+          width={this.props.width}
         />
       );
     }

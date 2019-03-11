@@ -324,6 +324,7 @@ class SideBar extends React.Component {
           toggler={this.folderToggler}
           expendedDir={this.state.expendedDir}
           key={getNewID()}
+          width={this.props.width}
         />
       );
     }
@@ -332,6 +333,8 @@ class SideBar extends React.Component {
         <SideBarFile 
           note={this.props.noteIndex[directory.no[n]]}
           key={getNewID()}
+          width={this.props.width}
+          level={level}
         />
       );
     }
@@ -377,6 +380,8 @@ class SideBar extends React.Component {
           tagids={tagDict[i]}
           title={i}
           showAllTag={this.state.showAllTag}
+          level={0}
+          width={this.props.width}
         />
       );
     }
