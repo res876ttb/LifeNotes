@@ -66,7 +66,6 @@ import {
 // import css file
 import '../styles/SideBar.css';
 import '../../vendor/react-perfect-scrollbar.min.css';
-import { generateKeyPair } from 'crypto';
 
 // ============================================
 // constants
@@ -90,6 +89,7 @@ class SideBar extends React.Component {
 
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.folderToggler = this.folderToggler.bind(this);
+    this.tagToggler = this.tagToggler.bind(this);
 
     this.handleRightClick = this.handleRightClick.bind(this);
     this.handleMenuClick = this.handleMenuClick.bind(this);
@@ -153,63 +153,70 @@ class SideBar extends React.Component {
       tagList = this.getTreeComponentsTag(this.props.tagIndex['0']);
     }
 
-    return (
-      <div 
-        id='SB-frame' 
-        style={{width: `${this.props.width}px`,}}
-        onDragOver={e => e.preventDefault()}
-        onDrop={this.handleDrop}
-      >
-        <div style={{position: 'absolute', bottom: '183px', left: '2px', right: '2px', top: '2px', borderBottom: 'solid 1px rgb(200, 200, 200)'}} onContextMenu={this.handleRightClick}>
-          <PerfectScrollbar>
-            {fileList}
-            <div style={{margin: '0px 10px', width: `${this.props.width - 20}px`, height: '30px'}}>
-              <div style={{borderBottom: '2px dotted rgb(150,150,150)', height: '15px'}}></div>
-            </div>
-            {tagList}
-          </PerfectScrollbar>
-        </div>
-        {/* Reset button, used for debugging */}
-        <div style={{position: 'fixed', bottom: '130px', width: `${this.props.width}px`, textAlign: 'center'}}>
-          <div style={{margin: '0px auto 0px auto'}}>
-            <Tooltip title='This buttom will remove all data in database immediately. Note that this action cannot be undone.' placement='right'>
-              <Button variant="contained" color="secondary" onClick={this.handleResetDB}>
-                Reset Database
-              </Button>
-            </Tooltip>
+    let fileTree = (
+      <div style={{position: 'absolute', bottom: '183px', left: '2px', right: '2px', top: '2px', borderBottom: 'solid 1px rgb(200, 200, 200)'}} onContextMenu={this.handleRightClick}>
+        <PerfectScrollbar>
+          {fileList}
+          <div style={{margin: '0px 10px', width: `${this.props.width - 20}px`, height: '30px'}}>
+            <div style={{borderBottom: '2px dotted rgb(150,150,150)', height: '15px'}}></div>
           </div>
-        </div>
-        {/* Setting bottons & sync bottons */}
-        <div style={{position: 'fixed', bottom: '67px', height: '40px', width: `${this.props.width}px`, textAlign: 'center', borderTop: 'solid 1px rgb(200, 200, 200)', paddingTop: '10px'}}>
-          <Button onClick={this.handleOpenSetting}>
-            <i className="fas fa-cog"></i>
-            <div className='inline-block' style={{paddingLeft: '6px'}}>Setting</div>
-          </Button>
-          <Button disabled={this.props.GDSignedIn ? false : true}>
-            <i className="fas fa-sync-alt"></i>
-            <div className='inline-block' style={{paddingLeft: '6px'}}>Sync</div>
-          </Button>
-        </div>
-        <Setting 
-          open={this.state.settingOpen}
-          toggleSetting={this.handleOpenSetting}
-        />
-        {/* Sign-in button */}
-        <div style={{position: 'fixed', bottom: '10px', height: '40px', width: `${this.props.width}px`, textAlign: 'center', borderTop: 'solid 1px rgb(200, 200, 200)', paddingTop: '10px'}}>
-          {this.props.GDSignedIn ? 
-            <UserProfile
-              handleSignOutGoogle={this.handleSignOutGoogle}
-              width={this.props.width}
-            /> :
-            <div style={{margin: '0px auto 0px auto'}}>
-              <Button variant="contained" color="primary" onClick={this.handleSignInWithGoogle}>
-                <i className="fab fa-google" style={{paddingRight: '6px'}}></i>
-                Sign in
-              </Button>
-            </div> 
-          }
-        </div>
+          {tagList}
+        </PerfectScrollbar>
+      </div>
+    );
 
+    // Reset button, used for debugging
+    let resetDatabase = (
+      <div style={{position: 'fixed', bottom: '130px', width: `${this.props.width}px`, textAlign: 'center'}}>
+        <div style={{margin: '0px auto 0px auto'}}>
+          <Tooltip title='This buttom will remove all data in database immediately. Note that this action cannot be undone.' placement='right'>
+            <Button variant="contained" color="secondary" onClick={this.handleResetDB}>
+              Reset Database
+            </Button>
+          </Tooltip>
+        </div>
+      </div>
+    )
+
+    let settingSync = (
+      <div style={{position: 'fixed', bottom: '67px', height: '40px', width: `${this.props.width}px`, textAlign: 'center', borderTop: 'solid 1px rgb(200, 200, 200)', paddingTop: '10px'}}>
+        <Button onClick={this.handleOpenSetting}>
+          <i className="fas fa-cog"></i>
+          <div className='inline-block' style={{paddingLeft: '6px'}}>Setting</div>
+        </Button>
+        <Button disabled={this.props.GDSignedIn ? false : true}>
+          <i className="fas fa-sync-alt"></i>
+          <div className='inline-block' style={{paddingLeft: '6px'}}>Sync</div>
+        </Button>
+      </div>
+    );
+
+    let setting = (
+      <Setting 
+        open={this.state.settingOpen}
+        toggleSetting={this.handleOpenSetting}
+      />
+    );
+
+    let signInUserProfile = (
+      <div style={{position: 'fixed', bottom: '10px', height: '40px', width: `${this.props.width}px`, textAlign: 'center', borderTop: 'solid 1px rgb(200, 200, 200)', paddingTop: '10px'}}>
+        {this.props.GDSignedIn ? 
+          <UserProfile
+            handleSignOutGoogle={this.handleSignOutGoogle}
+            width={this.props.width}
+          /> :
+          <div style={{margin: '0px auto 0px auto'}}>
+            <Button variant="contained" color="primary" onClick={this.handleSignInWithGoogle}>
+              <i className="fab fa-google" style={{paddingRight: '6px'}}></i>
+              Sign in
+            </Button>
+          </div> 
+        }
+      </div>
+    )
+
+    let menu = (
+      <div>
         <Menu
           anchorReference={this.state.anchorReference}
           anchorEl={this.state.anchorEl}
@@ -259,10 +266,30 @@ class SideBar extends React.Component {
             </Button>
           </DialogActions>
         </Dialog>
-        <div id='SB-resizer'
-          onMouseDown={this.handleMouseDown}
-          style={{left: `${this.props.width + 5}px`}}
-        ></div>
+      </div>
+    );
+
+    let resizer = (
+      <div id='SB-resizer'
+        onMouseDown={this.handleMouseDown}
+        style={{left: `${this.props.width + 5}px`}}
+      ></div>
+    )
+
+    return (
+      <div 
+        id='SB-frame' 
+        style={{width: `${this.props.width}px`,}}
+        onDragOver={e => e.preventDefault()}
+        onDrop={this.handleDrop}
+      >
+        {fileTree}
+        {resetDatabase}
+        {settingSync}
+        {setting}
+        {signInUserProfile}
+        {menu}
+        {resizer}
       </div>
     );
   }
@@ -304,6 +331,20 @@ class SideBar extends React.Component {
       tmp.splice(this.state.expendedDir.indexOf(id), 1);
       this.setState({
         expendedDir: tmp
+      });
+    }
+  }
+
+  tagToggler(id) {
+    if (this.state.expendedTag.indexOf(id) == -1) {
+      this.setState({
+        expendedTag: [...this.state.expendedTag, id]
+      });
+    } else {
+      let tmp = [...this.state.expendedTag];
+      tmp.splice(this.state.expendedTag.indexOf(id), 1);
+      this.setState({
+        expendedTag: tmp,
       });
     }
   }
@@ -382,6 +423,9 @@ class SideBar extends React.Component {
           showAllTag={this.state.showAllTag}
           level={0}
           width={this.props.width}
+          toggler={this.tagToggler}
+          expended={this.state.expendedTag}
+          prefix={''}
         />
       );
     }

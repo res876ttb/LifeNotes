@@ -45,6 +45,9 @@ class SideBarTag extends React.Component {
     noteIndex: PropTypes.object,
     level: PropTypes.number,
     width: PropTypes.number,
+    toggler: PropTypes.func,
+    expended: PropTypes.array,
+    prefix: PropTypes.string,
   }
 
   constructor(props) {
@@ -61,6 +64,7 @@ class SideBarTag extends React.Component {
     this.state = {
       expand: false,
       showNote: false,
+      id: this.props.prefix + this.props.title,
     };
   }
 
@@ -85,11 +89,13 @@ class SideBarTag extends React.Component {
       </div>
     );
 
+    let expended = this.props.showAllTag || this.props.expended.indexOf(this.state.id) != -1;
+
     return (
       <div>
         <Tooltip title={title} interactive={true} placement="right">
           <div className='SideBarTag noselect' onClick={this.handleCollapseClick} onContextMenu={this.handleRightClick} style={{width: `${this.props.width - this.props.level * 20 - 4}px`}}>
-            <i className={"fab fa-slack-hash width-28 text-center " + (this.state.expand ? 'SideBarTag-hash-rotate' : '')}></i>
+            <i className={"fab fa-slack-hash width-28 text-center " + (expended ? 'SideBarTag-hash-rotate' : '')}></i>
             {this.props.title}
             <div className="SideBarTag-indicator text-center">
               <i className="fas fa-arrow-right SideBarTag-indicator-arrow"></i>
@@ -97,7 +103,7 @@ class SideBarTag extends React.Component {
           </div>
         </Tooltip>
         <div style={{paddingLeft: '20px'}}>
-          {this.props.showAllTag || this.state.expand ? children : null}
+          {expended ? children : null}
         </div>
       </div>
     );
@@ -105,11 +111,7 @@ class SideBarTag extends React.Component {
 
   handleCollapseClick(e) {
     e.stopPropagation();
-    if (this.state.expand) {
-      this.setState({expand: false});
-    } else {
-      this.setState({expand: true});
-    }
+    this.props.toggler(this.state.id);
   }
 
   handleTooltipClose(e) {
@@ -195,6 +197,9 @@ class SideBarTag extends React.Component {
           showAllTag={this.props.showAllTag}
           level={this.props.level}
           width={this.props.width}
+          toggler={this.props.toggler}
+          expended={this.props.expended}
+          prefix={this.state.id}
         />
       );
     }
