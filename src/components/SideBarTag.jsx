@@ -9,6 +9,8 @@ import {connect} from 'react-redux';
 
 import Tooltip from '@material-ui/core/Tooltip';
 
+import PerfectScrollbar from 'react-perfect-scrollbar';
+
 // ============================================
 // import react components
 import SideBarTagPlum from './SideBarTagPlum.jsx';
@@ -71,13 +73,15 @@ class SideBarTag extends React.Component {
     let notes = this.getNotes();
     let title = (
       <div className='SideBarTag-tooltip'>
-        <div className="SideBarTag-tooltip-title">
-          <p className="SideBarTag-tooltip-title-text">
-            <i className={"fab fa-slack-hash width-28 text-center "}></i>
-            {this.props.title}
-          </p>
-        </div>
-        {notes}
+        <PerfectScrollbar>
+          <div className="SideBarTag-tooltip-title">
+            <p className="SideBarTag-tooltip-title-text">
+              <i className={"fab fa-slack-hash width-28 text-center "}></i>
+              {this.props.title}
+            </p>
+          </div>
+          {notes}
+        </PerfectScrollbar>
       </div>
     );
 
