@@ -13,6 +13,7 @@ import {getNewID} from './id.js';
 import {getCurTime} from './date.js';
 import {printc} from './output.js';
 import {Trie} from './Trie.js';
+import {getVersion} from './version.js';
 
 // ===================================================================================
 // constant
@@ -23,7 +24,7 @@ const dbname = 'LifeNoteDB';
 const exampleNotes = { // note header
   i: welcomeNotesId,
   // content: '# Welcome to LifeNotes\n#Welcome #Example\nThis is a tutorial for LifeNotes usage.\n',
-  lmt: ct, // last modified time
+  mt: ct, // last modified time
   ct: ct,  // created time
   d: '0',  // directory where this note header exists
   t: 'Welcome to LifeNotes', // title
@@ -87,7 +88,7 @@ const defaultNoteIndexingFile = {
     d: '0',
     t: 'Welcome to LifeNotes',
     ta: ['1', '2'],
-    lmt: ct,
+    mt: ct,
     ct: ct,
   }
 }
@@ -573,7 +574,7 @@ export function newNote(id, directoryIndex, noteIndex, callback) {
         d: id,
         t: 'Untitled',
         ta: [],
-        lmt: curTime,
+        mt: curTime,
         ct: curTime,
       };
       noteIndex[note._id] = noteHeader;
@@ -593,10 +594,11 @@ export function newNote(id, directoryIndex, noteIndex, callback) {
  * @desc Update content of a note.
  * @param {object} noteid ID of the note in database
  * @param {string} noteContent Content of the note 
- * @param {func} callback This callback function which will be called after updating
+ * @param {object} noteIndex
+ * @param {func} callback Param: newNoteIndex
  * @returns {object} The note just updated.
  */
-export function updateNote(noteid, noteContent, callback) {
+export function updateNote(noteid, noteContent, noteIndex, callback) {
   db.get(noteid).then(res => {
     let newNote = {
       _id: res._id,
@@ -605,7 +607,8 @@ export function updateNote(noteid, noteContent, callback) {
     };
     db.put(newNote, {force: true}).then(res => {
       printc(`Note ${noteid} is updated successfully`);
-      if (callback) callback();
+      noteIndex[noteid].mt = getCurTime();
+      if (callback) callback(noteIndex);
     }).catch(err => {
       console.error(err);
     });
@@ -751,7 +754,6 @@ export function getAllNotes(callback) {
       {_id: {$ne: '3'}}, // settings file
     ]},
   }).then(result => {
-    printc(result.docs);
     if (callback) callback(result.docs);
   });
 }
@@ -936,6 +938,63 @@ export function runTest(noteIndex, tagIndex, callback) {
   
 }
 
+/**
+ * @public @func exportDatabase
+ * @desc Extract all notes from database and make it a string.
+ * @param {object} noteIndex
+ * @param {object} directoryIndex
+ * @param {object} tagIndex
+ * @param {func} callback Param: result
+ * @returns {null}
+ */
+export function exportDatabase(noteIndex, directoryIndex, tagIndex, callback) {
+  getAllNotes(notes => {
+    callback(JSON.stringify({
+      dataVersion: getVersion().dataVersion,
+      exportTime: getCurTime(),
+      noteIndex: noteIndex,
+      directoryIndex: directoryIndex,
+      tagIndex: tagIndex,
+      notes: notes,
+    }));
+  });
+}
+
+/**
+ * @public @func importDatabase
+ * @desc Import database from file
+ * @param {string} database
+ * @param {func} callback Param: newNoteIndex, newDirectoryIndex, newTagIndex, newTrie
+ * @returns {null}
+ */
+export function importDatabase(database, callback) {
+  let obj = JSON.parse(database);
+  createTagsTrie(obj.tagIndex, tagTrie => {
+    putNotes(obj.notes, () => {
+      callback(obj.noteIndex, obj.directoryIndex, obj.tagIndex, tagTrie);
+    });
+  });
+}
+
+/**
+ * @private @func putNotes
+ * @desc Write a batch of notes into database
+ * @param {array} notes Note objects
+ * @param {func} callback Param: none
+ * @returns {null}
+ */
+function putNotes(notes, callback) {
+  let putNotes = notes.map(note => {
+    return {
+      content: note.content,
+      _id: note._id,
+    };
+  });
+  db.bulkDocs(putNotes).then(() => {
+    callback();
+  });
+}
+
 /*
 function list: 
   initDB,
@@ -953,4 +1012,5 @@ function list:
   getAllNotes
   updateNoteIndexFile
   cleanDB
+  exportDatabase
  */

@@ -50,8 +50,10 @@ import {
   moveNote,
   newNote,
   newDirectory,
-  cleanDB, 
+  cleanDB,
   initDB,
+  exportDatabase,
+  importDatabase
 } from '../utils/storage.js';
 import {
   splitOnce
@@ -61,6 +63,9 @@ import {
   signOutGoogle,
   getGoogleUserProfile,
 } from '../utils/googleDrive.js';
+import {
+  downloadFile
+} from '../utils/download.js';
 
 // ============================================
 // import css file
@@ -93,6 +98,8 @@ class SideBar extends React.Component {
 
     this.handleRightClick = this.handleRightClick.bind(this);
     this.handleMenuClick = this.handleMenuClick.bind(this);
+    this.handleFeatureClick = this.handleFeatureClick.bind(this);
+    this.handleMoreClick = this.handleMoreClick.bind(this);
     this.handleNewNote = this.handleNewNote.bind(this);
     this.handleNewFolder = this.handleNewFolder.bind(this);
     this.handleDialogContentChange = this.handleDialogContentChange.bind(this);
@@ -107,6 +114,10 @@ class SideBar extends React.Component {
 
     this.handleOpenSetting = this.handleOpenSetting.bind(this);
 
+    this.handleExportDatabase = this.handleExportDatabase.bind(this);
+
+    this.handleGetDatabaseFile = this.handleGetDatabaseFile.bind(this);
+
     this.state = {
       expendedDir: ['0'],
       expendedTag: ['0'],
@@ -120,6 +131,8 @@ class SideBar extends React.Component {
         y: 0,
       },
       menuOpen: false,
+      featureOpen: false,
+      moreOpen: false,
       unchangeable: true,
 
       dialogOpen: false,
@@ -143,6 +156,10 @@ class SideBar extends React.Component {
     // console.log(this.state.expendedDir);
   }
 
+  componentDidMount() {
+    document.getElementById('database-file').addEventListener('change', this.handleGetDatabaseFile, false);
+  }
+
   render() {
     let fileList = <div></div>;
     let tagList = <div></div>;
@@ -154,7 +171,7 @@ class SideBar extends React.Component {
     }
 
     let fileTree = (
-      <div style={{position: 'absolute', bottom: '183px', left: '2px', right: '2px', top: '2px', borderBottom: 'solid 1px rgb(200, 200, 200)'}} onContextMenu={this.handleRightClick}>
+      <div style={{position: 'absolute', bottom: '175px', left: '2px', right: '2px', top: '2px'}} onContextMenu={this.handleRightClick}>
         <PerfectScrollbar>
           {fileList}
           <div style={{margin: '0px 10px', width: `${this.props.width - 20}px`, height: '30px'}}>
@@ -164,19 +181,6 @@ class SideBar extends React.Component {
         </PerfectScrollbar>
       </div>
     );
-
-    // Reset button, used for debugging
-    let resetDatabase = (
-      <div style={{position: 'fixed', bottom: '130px', width: `${this.props.width}px`, textAlign: 'center'}}>
-        <div style={{margin: '0px auto 0px auto'}}>
-          <Tooltip title='This buttom will remove all data in database immediately. Note that this action cannot be undone.' placement='right'>
-            <Button variant="contained" color="secondary" onClick={this.handleResetDB}>
-              Reset Database
-            </Button>
-          </Tooltip>
-        </div>
-      </div>
-    )
 
     let settingSync = (
       <div style={{position: 'fixed', bottom: '67px', height: '40px', width: `${this.props.width}px`, textAlign: 'center', borderTop: 'solid 1px rgb(200, 200, 200)', paddingTop: '10px'}}>
@@ -276,6 +280,65 @@ class SideBar extends React.Component {
       ></div>
     )
 
+    let features = (
+      <div style={{position: 'fixed', bottom: '127px', width: `${this.props.width}px`, textAlign: 'center', paddingTop: '10px', borderTop: 'solid 1px rgb(200, 200, 200)'}}>
+        <Button onClick={this.handleFeatureClick}>
+          <i className="fas fa-file-export"></i>
+          <div className='inline-block' style={{paddingLeft: '6px'}}>Export</div>
+        </Button>
+        <Button onClick={this.handleMoreClick}>
+          <i className="fas fa-grip-horizontal"></i>
+          <div className='inline-block' style={{paddingLeft: '6px'}}>More</div>
+        </Button>
+
+        <Menu
+          anchorReference={this.state.anchorReference}
+          anchorEl={this.state.anchorEl}
+          anchorPosition={{top: this.state.anchorPosition.y, left: this.state.anchorPosition.x}}
+          open={this.state.featureOpen}
+          onClose={this.handleFeatureClick}
+          onClick={e=>e.stopPropagation()}
+        >
+          <Tooltip title='Download Markdown file of current note.' placement='right' enterDelay={500}>
+            <MenuItem disabled>Markdown</MenuItem>
+          </Tooltip>
+          <Tooltip title='Download PDF file of current note.' placement='right' enterDelay={500}>
+            <MenuItem disabled>PDF</MenuItem>
+          </Tooltip>
+          <Tooltip title='Download the whole user data as well as setting.' placement='right' enterDelay={500}>
+            <MenuItem onClick={this.handleExportDatabase}>Whole database</MenuItem>
+          </Tooltip>
+        </Menu>
+
+        <Menu
+          anchorReference={this.state.anchorReference}
+          anchorEl={this.state.anchorEl}
+          anchorPosition={{top: this.state.anchorPosition.y, left: this.state.anchorPosition.x}}
+          open={this.state.moreOpen}
+          onClose={this.handleMoreClick}
+          onClick={e=>e.stopPropagation()}
+        >
+          <label htmlFor="database-file">
+            <MenuItem onClick={this.handleMoreClick}>Import from database file</MenuItem>
+          </label>
+          <MenuItem disabled>Import from markdown file</MenuItem>
+          <Tooltip title='This buttom will remove all data in database immediately. Note that this action cannot be undone.'>
+            <MenuItem onClick={this.handleResetDB}>Reset Database</MenuItem>
+          </Tooltip>
+        </Menu>
+      </div>
+    );
+
+    let inputs = (
+      <input
+        accept=".json"
+        id="database-file"
+        type="file"
+        style={{display: 'none'}}
+        name="file"
+      />
+    );
+
     return (
       <div 
         id='SB-frame' 
@@ -284,14 +347,45 @@ class SideBar extends React.Component {
         onDrop={this.handleDrop}
       >
         {fileTree}
-        {resetDatabase}
         {settingSync}
         {setting}
         {signInUserProfile}
+        {features}
         {menu}
         {resizer}
+        {inputs}
       </div>
     );
+  }
+
+  handleGetDatabaseFile(e) {
+    let file = e.target.files[0];
+    let reader = new FileReader();
+    reader.onload = (f => {
+      return e => {
+        cleanDB(() => {
+          initDB(() => {
+            importDatabase(e.target.result, (newNoteIndex, newDirectoryIndex, newTagIndex, newTire) => {
+              this.props.dispatch(initIndex(newDirectoryIndex, newNoteIndex, newTagIndex, newTire));
+              this.props.dispatch(updateNoteIndex(newNoteIndex));
+              this.props.dispatch(updateTagIndex(newTagIndex));
+              this.props.dispatch(updateDirectoryIndex(newDirectoryIndex));
+              this.props.dispatch(updateTagTrie(newTire));
+              console.log('Database is imported!!');
+              this.handleMoreClick();
+            });
+          });
+        });
+      }
+    })(file);
+    reader.readAsText(file);
+  }
+
+  handleExportDatabase() {
+    exportDatabase(this.props.noteIndex, this.props.directoryIndex, this.props.tagIndex, database => {
+      downloadFile(database, 'database.json', 0);
+    });
+    this.handleFeatureClick();
   }
 
   handleOpenSetting() {
@@ -437,6 +531,24 @@ class SideBar extends React.Component {
     )
   }
 
+  handleMoreClick(e) {
+    if (e) e.stopPropagation();
+    if (this.state.moreOpen !== true) {
+      this.setState({moreOpen: true, anchorEl: e.currentTarget, anchorReference: 'anchorEl'});
+    } else {
+      this.setState({moreOpen: false, anchorEl: null});
+    }
+  }
+
+  handleFeatureClick(e) {
+    if (e) e.stopPropagation();
+    if (this.state.featureOpen !== true) {
+      this.setState({featureOpen: true, anchorEl: e.currentTarget, anchorReference: 'anchorEl'});
+    } else {
+      this.setState({featureOpen: false, anchorEl: null});
+    }
+  }
+
   handleMouseDown(e) {
     this.props.mouseDown();
     e.preventDefault();
@@ -563,6 +675,7 @@ class SideBar extends React.Component {
         this.props.dispatch(updateDirectoryIndex(directoryIndex));
         this.props.dispatch(updateTagTrie(tagTrie));
         console.log('DB is reset!!');
+        this.handleMoreClick();
       })
     });
   }

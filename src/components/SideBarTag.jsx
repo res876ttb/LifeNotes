@@ -64,7 +64,7 @@ class SideBarTag extends React.Component {
     this.state = {
       expand: false,
       showNote: false,
-      id: this.props.prefix + this.props.title,
+      id: this.props.prefix + '/' + this.props.title,
     };
   }
 

@@ -159,7 +159,9 @@ class Editor extends React.Component {
     for (let i in this.props.tabArr) {
       let id = this.props.tabArr[i];
       if (noteArr[id].modified && noteArr[id].editor) {
-        updateNote(id, noteArr[id].editor.getValue(), () => {});
+        updateNote(id, noteArr[id].editor.getValue(), this.props.noteIndex, newNoteIndex => {
+          this.props.dispatch(updateNoteIndex(newNoteIndex));
+        });
       }
       noteArr[id].modified = false;
     }
@@ -169,7 +171,9 @@ class Editor extends React.Component {
   }
 
   handleSaveNote(id) {
-    updateNote(id, this.state.noteArr[id].editor.getValue(), () => {});
+    updateNote(id, this.state.noteArr[id].editor.getValue(), this.props.noteIndex, newNoteIndex => {
+      this.props.dispatch(updateNoteIndex(newNoteIndex));
+    });
   }
 
   handleChangeNoteSignal(id) {
